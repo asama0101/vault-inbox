@@ -62,7 +62,7 @@ claude --plugin-dir <このリポジトリ>/vault-inbox
 
 ### 環境を確かめる（`doctor`）
 
-何も変更せずに、実行環境・保存先・依存（PDF・Office のライブラリ、SQLite FTS5）・プラグインの版を、1 行ずつ表示する。行の頭は `[OK]`（満たしている）・`[NG]`（必須の依存が足りない）・`[任意]`（使う機能のときだけ要る依存が足りない）・`[情報]`（版の確認結果）。対処があれば、次の行に `  → ` で続く。`[NG]` があると終了コードは 3 になる。`--data` には、プラグインの保存先（`${CLAUDE_PLUGIN_DATA}`。通常は `~/.claude/plugins/data/` の下の `vault-inbox` のフォルダ）を渡す（未検証）。
+何も変更せずに、実行環境・保存先・依存（PDF・Office のライブラリ、SQLite FTS5）・プラグインの版を、1 行ずつ表示する。行の頭は `[OK]`（満たしている）・`[NG]`（必須の条件を満たしていない。Python の版・保存先・SQLite FTS5 trigram など）・`[任意]`（使う機能のときだけ要る依存が足りない）・`[情報]`（版の確認結果）。対処があれば、次の行に `  → ` で続く。`[NG]` があると終了コードは 3 になる。`--data` には、プラグインの保存先（`${CLAUDE_PLUGIN_DATA}`。通常は `~/.claude/plugins/data/` の下の `vault-inbox` のフォルダ）を渡す（未検証）。
 
 ```
 python -X utf8 "<プラグインのパス>/scripts/vault_inbox.py" doctor --data "<保存先のパス>"
@@ -143,7 +143,7 @@ Python 3.10 以上を入れ、`python --version` で版が出ることを確か�
 
 - 文字が取れない PDF（スキャン）、壊れた資料、パスワード付きの資料は、取り込めずに残る。内容が同じ資料は、2 つ目以降が取り込まれない。
 - PDF・Office が残るときは、依存ライブラリが入っていない（理由は `missing_dependency: <pip 名>`）。`pip install -r requirements.txt` を実行する。
-- 対象外のものは取り込まれない。サブフォルダ、`~$`・`.` で始まる名前、対応外の形式（`.doc`・`.xls`・`.ppt`・画像・csv・json・zip）、`.要約.md` で終わる名前。
+- 次のものは取り込まれない。サブフォルダ、`~$`・`.` で始まる名前、対応外の形式（`.doc`・`.xls`・`.ppt`・画像・csv・json・zip）、`.要約.md` で終わる名前。
 - 分類先に同名で内容が違う資料があると、`name_collision` で残る。名前を変えて置き直すか、先に既存の資料を整理する。
 
 実機での確認の手順と、既知の制限は [docs/manual-check.md](docs/manual-check.md) にある。

@@ -325,6 +325,54 @@ def test_args_file_rejects_duplicate_options_and_root(vault, tmp_path, lines):
     assert "引数ファイル" in r.stderr
 
 
+@pytest.mark.parametrize(
+    ("lines", "expected"),
+    [
+        (["--id=d1", "--ro=/elsewhere", "--date=2026-01-01"], "unrecognized"),
+        (["--id=d1", "--roo=/elsewhere", "--date=2026-01-01"], "unrecognized"),
+        (["--id=A", "--i=B", "--date=2026-01-01"], "unrecognized"),
+        (["--id=d1", "--date=2026-01-01", "--dat=2026-02-02"], "unrecognized"),
+        (["--id=d1", "--date=2026-01-01", "@nested.txt"], "入れ子"),
+    ],
+)
+def test_args_file_rejects_abbreviations_and_nested_files(
+    vault, tmp_path, lines, expected
+):
+    import subprocess
+    import sys
+
+    args = tmp_path / "args.txt"
+    args.write_bytes(("\n".join(lines) + "\n").encode())
+    script = PLUGIN / "scripts" / "vault_inbox.py"
+    r = subprocess.run(
+        [sys.executable, "-X", "utf8", str(script), "update-meta"]
+        + [f"--root={vault}", f"@{args}"],
+        capture_output=True,
+        encoding="utf-8",
+        timeout=60,
+    )
+    assert r.returncode == 2
+    assert r.stdout == ""
+    assert expected in r.stderr
+
+
+def test_subcommand_abbreviation_is_rejected(vault):
+    import subprocess
+    import sys
+
+    script = PLUGIN / "scripts" / "vault_inbox.py"
+    r = subprocess.run(
+        [sys.executable, "-X", "utf8", str(script), "updat-meta"]
+        + [f"--root={vault}", "--id=d1"],
+        capture_output=True,
+        encoding="utf-8",
+        timeout=60,
+    )
+    assert r.returncode == 2
+    assert r.stdout == ""
+    assert "invalid choice" in r.stderr
+
+
 @pytest.mark.parametrize("name", SKILLS)
 def test_allowed_tools_never_grant_a_bare_write(name):
     """Write must be limited to the args file; a bare Write pre-approves any path."""
