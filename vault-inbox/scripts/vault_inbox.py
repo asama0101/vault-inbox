@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from vault_inbox import (
+    doctor,  # noqa: E402
     extract,  # noqa: E402
     index,  # noqa: E402
     indexmd,  # noqa: E402
@@ -36,6 +37,12 @@ def _cmd_status(args) -> dict:
         "has_obsidian": vault.has_obsidian(root),
         "missing_deps": extract.missing_dependencies(),
     }
+
+
+def _cmd_doctor(args) -> int:
+    text, code = doctor.run(Path(args.data))
+    sys.stdout.write(text)
+    return code
 
 
 def _store(args) -> tuple[Path, MetaStore]:
@@ -104,7 +111,22 @@ def _cmd_scan(args) -> dict:
     return follow.scan(root, store)
 
 
+_RESOLVE_OPTIONS = {
+    "register": ("path", "date", "summary"),
+    "regroup": ("missing_id", "new_path"),
+    "ignore": ("path",),
+    "drop": ("id",),
+}
+
+
 def _cmd_resolve(args) -> dict:
+    allowed = _RESOLVE_OPTIONS.get(args.action)
+    if allowed is not None:
+        for opt in ("missing_id", "new_path", "id", "path", "date", "summary"):
+            if getattr(args, opt) and opt not in allowed:
+                args.parser.error(
+                    f"--action={args.action} に --{opt.replace('_', '-')} は使えません"
+                )
     root, store = _store(args)
     kw = {
         "missing_id": args.missing_id,
@@ -129,8 +151,13 @@ def _docs(store: MetaStore, ids: list[str]) -> list[dict]:
 def _cmd_search(args) -> dict:
     root, store = _store(args)
     index.ensure(root, store)
-    ids = index.search(root, store, args.query)
-    return {"ids": ids, "docs": _docs(store, ids)}
+    ids, total = index.search_with_total(root, store, args.query)
+    return {
+        "ids": ids,
+        "docs": _docs(store, ids),
+        "truncated": total > len(ids),
+        "total": total,
+    }
 
 
 def _cmd_expand(args) -> dict:
@@ -263,48 +290,51 @@ def _cmd_watch(args) -> dict | None:
 def register(subparsers) -> None:
     """Add the subcommands of this task group."""
     for name, func in (("lock", _cmd_lock), ("unlock", _cmd_unlock)):
-        p = subparsers.add_parser(name)
+        p = subparsers.add_parser(name, allow_abbrev=False)
         p.add_argument("--root", default=".")
         p.add_argument("--owner", required=True, choices=locking.OWNERS)
         p.add_argument("--name", default="session", choices=tuple(locking.NAMES))
         p.set_defaults(func=func)
-    ip = subparsers.add_parser("inbox-mark")
+    dp = subparsers.add_parser("doctor", allow_abbrev=False)
+    dp.add_argument("--data", required=True)
+    dp.set_defaults(func=_cmd_doctor)
+    ip = subparsers.add_parser("inbox-mark", allow_abbrev=False)
     ip.add_argument("--root", default=".")
     for opt in ("name", "hash", "status"):
         ip.add_argument(f"--{opt}", required=True)
     ip.add_argument("--id")
     ip.set_defaults(func=_cmd_inbox_mark)
-    cp = subparsers.add_parser("changed")
+    cp = subparsers.add_parser("changed", allow_abbrev=False)
     cp.add_argument("--root", default=".")
     cp.set_defaults(func=_cmd_changed)
-    sp = subparsers.add_parser("snapshot-save")
+    sp = subparsers.add_parser("snapshot-save", allow_abbrev=False)
     sp.add_argument("--root", default=".")
     sp.set_defaults(func=_cmd_snapshot_save)
-    ap = subparsers.add_parser("snapshot-absorb")
+    ap = subparsers.add_parser("snapshot-absorb", allow_abbrev=False)
     ap.add_argument("--root", default=".")
     ap.set_defaults(func=_cmd_snapshot_absorb)
-    wp = subparsers.add_parser("watch")
+    wp = subparsers.add_parser("watch", allow_abbrev=False)
     wp.add_argument("--root", default=".")
     wp.add_argument("--interval", type=float, default=5.0)
     wp.add_argument("--settle", type=float, default=3.0)
     wp.set_defaults(func=_cmd_watch)
-    sp = subparsers.add_parser("scan")
+    sp = subparsers.add_parser("scan", allow_abbrev=False)
     sp.add_argument("--root", default=".")
     sp.set_defaults(func=_cmd_scan)
-    rp = subparsers.add_parser("resolve")
+    rp = subparsers.add_parser("resolve", allow_abbrev=False)
     rp.add_argument("--root", default=".")
     rp.add_argument("--action", required=True)
     for opt in ("missing-id", "new-path", "id", "path", "date"):
         rp.add_argument(f"--{opt}")
     rp.add_argument("--summary", default="")
-    rp.set_defaults(func=_cmd_resolve)
-    up = subparsers.add_parser("update-meta")
+    rp.set_defaults(func=_cmd_resolve, parser=rp)
+    up = subparsers.add_parser("update-meta", allow_abbrev=False)
     up.add_argument("--root", default=".")
     up.add_argument("--id", required=True)
     for opt in ("date", "summary"):
         up.add_argument(f"--{opt}")
     up.set_defaults(func=_cmd_update_meta)
-    kp = subparsers.add_parser("kinds")
+    kp = subparsers.add_parser("kinds", allow_abbrev=False)
     kp.add_argument("--root", default=".")
     kp.set_defaults(func=_cmd_kinds)
     for name, func, opts in (
@@ -316,7 +346,7 @@ def register(subparsers) -> None:
         ("kind-add", _cmd_kind_add, ("kind",)),
         ("dangling", _cmd_dangling, ()),
     ):
-        p = subparsers.add_parser(name)
+        p = subparsers.add_parser(name, allow_abbrev=False)
         p.add_argument("--root", default=".")
         for opt in opts:
             p.add_argument(f"--{opt}", required=True)
@@ -330,7 +360,7 @@ def register(subparsers) -> None:
         ("indexmd", _cmd_indexmd),
         ("rebuild", _cmd_rebuild),
     ):
-        p = subparsers.add_parser(name)
+        p = subparsers.add_parser(name, allow_abbrev=False)
         p.add_argument("--root", default=".")
         if name == "place":
             p.add_argument("--name", required=True)
@@ -342,8 +372,50 @@ def register(subparsers) -> None:
         p.set_defaults(func=func)
 
 
+class _Parser(argparse.ArgumentParser):
+    """Reads `@file` arguments one per "\n" line only.
+
+    str.splitlines() also breaks on \r, \x0b, \x0c, \x85, U+2028 and the like, so a
+    value taken from a document could start a new argument (`--id=evil`).
+    """
+
+    def _check_file_options(self, lines):
+        """Rejects `--root` and repeated options (a later line would win)."""
+        seen = set()
+        for ln in lines:
+            if not ln.startswith("--"):
+                continue
+            name = ln.split("=", 1)[0]
+            if name == "--root":
+                self.error("引数ファイルに --root は書けません")
+            if name in seen:
+                self.error(f"引数ファイルに {name} が重複しています")
+            seen.add(name)
+        if any(ln.startswith("@") for ln in lines):
+            self.error("引数ファイルの入れ子（@ で始まる行）は使えません")
+
+    def _read_args_from_files(self, arg_strings):
+        out = []
+        for arg in arg_strings:
+            if not arg or arg[0] not in self.fromfile_prefix_chars:
+                out.append(arg)
+                continue
+            try:
+                # newline="" keeps a lone \r from being turned into a line break.
+                with Path(arg[1:]).open(encoding="utf-8", newline="") as f:
+                    lines = f.read().split("\n")
+            except OSError as err:
+                raise argparse.ArgumentError(None, str(err)) from err
+            if lines[-1] == "":
+                lines.pop()
+            lines = [ln.removesuffix("\r") for ln in lines]
+            self._check_file_options(lines)
+            out.extend(self._read_args_from_files(lines))
+        return out
+
+
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="vault_inbox")
+    parser = _Parser(prog="vault_inbox", fromfile_prefix_chars="@", allow_abbrev=False)
     sub = parser.add_subparsers(dest="cmd", required=True)
     register(sub)
     return parser
@@ -352,6 +424,8 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
     result = args.func(args)
+    if isinstance(result, int):
+        return result
     if result is not None:
         sys.stdout.write(json.dumps(result, ensure_ascii=False) + "\n")
     return 0

@@ -5,6 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 from conftest import write
 from vault_inbox import index, relations
 from vault_inbox.meta import Doc, MetaStore, file_hash
@@ -136,6 +137,18 @@ def test_cli_search_builds_index_first(vault):
     index.save_text(vault, "a", "service agreement")
     store.save()
     assert _run(vault, "search", "--query", "agreement")["ids"] == ["a"]
+
+
+@pytest.mark.parametrize(("count", "truncated"), [(20, False), (21, True)])
+def test_cli_search_reports_truncation(vault, count, truncated):
+    store = MetaStore(vault)
+    for n in range(count):
+        _placed(vault, store, f"d{n:02}", f"project/x/d{n:02}.md", "service agreement")
+    store.save()
+    out = _run(vault, "search", "--query", "agreement")
+    assert len(out["ids"]) == 20
+    assert out["truncated"] is truncated
+    assert out["total"] == count
 
 
 def test_cli_relate_rejects_unknown_or_inactive_ids(vault):

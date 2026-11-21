@@ -1,0 +1,11 @@
+vault-inbox NOTICE
+
+このプラグインには、取り込んだ外部の文書・コードはありません。
+
+次のライブラリは、利用者が pip で導入します（requirements.txt の版）。配布物には同梱しません。
+ライセンスは、pip show で確かめた配布情報です。
+
+- pypdf 7.1.1: BSD-3-Clause
+- python-docx 1.2.0: MIT
+- openpyxl 3.1.5: MIT
+- python-pptx 1.0.2: MIT

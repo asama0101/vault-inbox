@@ -94,9 +94,16 @@ def ensure(root: Path, store: MetaStore) -> bool:
 
 
 def search(root: Path, store: MetaStore, query: str, limit: int = 20) -> list[str]:
+    return search_with_total(root, store, query, limit)[0]
+
+
+def search_with_total(
+    root: Path, store: MetaStore, query: str, limit: int = 20
+) -> tuple[list[str], int]:
+    """Returns the top `limit` ids and the total number of matches."""
     terms = query.split()
     if not terms:
-        return []
+        return [], 0
     long_terms = [t for t in terms if len(t) >= _MIN_FTS_LEN]
     short_terms = [t.casefold() for t in terms if len(t) < _MIN_FTS_LEN]
     active = {d.id for d in store.docs() if d.state == "active"}
@@ -124,6 +131,4 @@ def search(root: Path, store: MetaStore, query: str, limit: int = 20) -> list[st
             if not all(t in body for t in short_terms):
                 continue
         result.append(doc_id)
-        if len(result) >= limit:
-            break
-    return result
+    return result[:limit], len(result)

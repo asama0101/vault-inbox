@@ -2,7 +2,18 @@
   "name": "vault-inbox",
   "version": "0.1.0",
   "description": "Obsidian Vault の inbox を整理・監視・質問するプラグイン",
-  "author": { "name": "asama0101" },
+  "author": {
+    "name": "asama0101 contributors"
+  },
   "license": "MIT",
+  "repository": "https://github.com/asama0101/vault-inbox",
+  "keywords": [
+    "obsidian",
+    "vault",
+    "inbox",
+    "notes",
+    "organize",
+    "search"
+  ],
   "skills": "./skills"
 }
