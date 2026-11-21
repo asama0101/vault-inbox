@@ -85,7 +85,9 @@ def test_missing_library_is_optional_not_ng(tmp_path, monkeypatch):
     text, code = doctor.run(tmp_path, known=tmp_path / "none.json")
     assert "[任意] pypdf:" in text
     assert "[OK] python-docx:" in text
-    assert code == 0 or "[NG]" in text
+    assert code == 0
+    line = next(ln for ln in _lines(text) if "pypdf:" in ln)
+    assert not line.startswith("[NG]")
 
 
 def test_fts5_unavailable_is_ng(tmp_path, monkeypatch):
@@ -134,3 +136,14 @@ def test_latest_unavailable_is_not_ng(tmp_path):
     assert "（最新のバージョンを確認できませんでした: offline）" in out[0]
     assert out[1].startswith("  → ネットワークにつながっているか")
     assert not out[0].startswith("[NG]")
+
+
+def test_marketplace_entry_without_repo_is_skipped(tmp_path):
+    known = _register(tmp_path, doctor.PLUGIN_ROOT)
+    data = json.loads(known.read_text(encoding="utf-8"))
+    del data["mine"]["source"]["repo"]
+    known.write_text(json.dumps(data), encoding="utf-8")
+    out = doctor._check_version(known, lambda _u: "{}")
+    assert len(out) == 1
+    assert out[0].startswith("[情報] プラグインのバージョン: v")
+    assert "登録していないため" in out[0]

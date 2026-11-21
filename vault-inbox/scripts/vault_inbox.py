@@ -352,8 +352,34 @@ def register(subparsers) -> None:
         p.set_defaults(func=func)
 
 
+class _Parser(argparse.ArgumentParser):
+    """Reads `@file` arguments one per "\n" line only.
+
+    str.splitlines() also breaks on \r, \x0b, \x0c, \x85, U+2028 and the like, so a
+    value taken from a document could start a new argument (`--id=evil`).
+    """
+
+    def _read_args_from_files(self, arg_strings):
+        out = []
+        for arg in arg_strings:
+            if not arg or arg[0] not in self.fromfile_prefix_chars:
+                out.append(arg)
+                continue
+            try:
+                # newline="" keeps a lone \r from being turned into a line break.
+                with Path(arg[1:]).open(encoding="utf-8", newline="") as f:
+                    lines = f.read().split("\n")
+            except OSError as err:
+                raise argparse.ArgumentError(None, str(err)) from err
+            if lines[-1] == "":
+                lines.pop()
+            lines = [ln.removesuffix("\r") for ln in lines]
+            out.extend(self._read_args_from_files(lines))
+        return out
+
+
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="vault_inbox", fromfile_prefix_chars="@")
+    parser = _Parser(prog="vault_inbox", fromfile_prefix_chars="@")
     sub = parser.add_subparsers(dest="cmd", required=True)
     register(sub)
     return parser

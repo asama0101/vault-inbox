@@ -269,6 +269,47 @@ def test_update_meta_takes_awkward_values_from_an_args_file(vault, tmp_path):
     assert store2.get("d1").summary == summary
 
 
+@pytest.mark.parametrize("sep", [" ", " ", "\x0b", "\x0c", "\x85", "\r", "\x1c"])
+def test_args_file_splits_lines_only_on_newline(vault, tmp_path, sep):
+    """Other line breaks (PDF form feeds, U+2028...) stay inside one value, so a
+    value cannot smuggle in `--id=evil` as a separate argument."""
+    import subprocess
+    import sys
+
+    store = MetaStore(vault)
+    store.load()
+    store.put(
+        Doc(id="d1", hash="h", path="shared/a.md", date="2026-01-01", summary="s")
+    )
+    store.save()
+    summary = f"abc{sep}--id=evil"
+    args = tmp_path / "args.txt"
+    args.write_bytes(f"--id=d1\r\n--date=2026-01-01\n--summary={summary}\n".encode())
+    script = PLUGIN / "scripts" / "vault_inbox.py"
+    r = subprocess.run(
+        [sys.executable, "-X", "utf8", str(script), "update-meta"]
+        + [f"--root={vault}", f"@{args}"],
+        capture_output=True,
+        encoding="utf-8",
+        timeout=60,
+    )
+    assert json.loads(r.stdout) == {"ok": True}, r.stderr
+    store2 = MetaStore(vault)
+    store2.load()
+    assert store2.get("d1").summary == summary
+
+
+@pytest.mark.parametrize("name", SKILLS)
+def test_allowed_tools_never_grant_a_bare_write(name):
+    """Write must be limited to the args file; a bare Write pre-approves any path."""
+    head = _text(name).split("---", 2)[1]
+    tools = [ln.strip()[2:] for ln in head.splitlines() if ln.strip().startswith("- ")]
+    assert "Write" not in tools
+    for t in tools:
+        if t.startswith("Write"):
+            assert t == "Write(${CLAUDE_PLUGIN_DATA}/args.txt)"
+
+
 @pytest.mark.parametrize("name", SKILLS)
 def test_allowed_tools_name_only_real_subcommands(name):
     head = _text(name).split("---", 2)[1]
@@ -361,7 +402,8 @@ def test_every_cli_value_is_single_quoted(name):
 def test_organize_register_as_new_drops_the_missing_doc():
     t = _text("organize")
     part = t.split("「新規として登録する」: ", 1)[1].split("\n", 1)[0]
-    assert "--action='register'" in part
+    assert "--action=register" in part
+    assert "SCRIPT resolve @ARGS" in part
     assert "SCRIPT resolve --action='drop' --id='<消えた資料の id>'" in part
 
 

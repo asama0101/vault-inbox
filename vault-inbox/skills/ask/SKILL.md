@@ -5,7 +5,7 @@ allowed-tools:
   - AskUserQuestion
   - Read
   - Grep
-  - Write
+  - Write(${CLAUDE_PLUGIN_DATA}/args.txt)
   - Bash(python -X utf8 "${CLAUDE_PLUGIN_ROOT}/scripts/vault_inbox.py" status *)
   - Bash(python -X utf8 "${CLAUDE_PLUGIN_ROOT}/scripts/vault_inbox.py" search *)
   - Bash(python -X utf8 "${CLAUDE_PLUGIN_ROOT}/scripts/vault_inbox.py" expand *)
@@ -19,7 +19,7 @@ allowed-tools:
 
 # 資料への質問
 
-自動起動のままにする理由: 質問への回答が中心で、関係の記録は AskUserQuestion の承認のあとだけ行うため。
+自動起動のままにする理由: 質問への回答が中心で、関係の記録は AskUserQuestion の承認のあとだけ行うため。承認のあと、`indexmd` が md のプロパティと要約ノートを書き換える。
 
 スクリプトは次の形で呼ぶ（以下 `SCRIPT <cmd>` と書く）。出力は 1 行の JSON。
 

@@ -94,7 +94,7 @@ def _github_source(known: Path) -> tuple[str, str, str] | None:
     data = _read_json(known)
     for mp_name, entry in data.items():
         src = entry.get("source", {})
-        if src.get("source") != "github":
+        if src.get("source") != "github" or "repo" not in src:
             continue
         try:
             listing = _read_json(
