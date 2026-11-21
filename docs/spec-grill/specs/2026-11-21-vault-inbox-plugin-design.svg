@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 680" width="100%" font-family="'Yu Gothic UI','Meiryo',sans-serif">
+<title>SPEC 全体図（vault-inbox、資料ノートなし版）</title>
+<desc>inbox から整理済みフォルダへの流れ、メタデータの置き場、問い合わせと関係の記録</desc>
+<style>
+:root{--bg:#f4f8f3;--card:#ffffff;--line:#2f6b3f;--soft:#e3efe3;--text:#1d2b21;--accent:#c9731a;--mute:#5d6f61}
+.bg{fill:var(--bg)}
+.card{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+.soft{fill:var(--soft);stroke:var(--line);stroke-width:1}
+.cmd{fill:var(--line);stroke:none}
+.t{fill:var(--text);font-size:13px}
+.tb{fill:var(--text);font-size:14px;font-weight:700}
+.tw{fill:#ffffff;font-size:14px;font-weight:700}
+.tm{fill:var(--mute);font-size:12px}
+.ta{fill:var(--accent);font-size:12px;font-weight:700}
+.ar{stroke:var(--line);stroke-width:2;fill:none;marker-end:url(#h)}
+.ara{stroke:var(--accent);stroke-width:2;fill:none;marker-end:url(#ha);stroke-dasharray:6 4}
+</style>
+<defs>
+<marker id="h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2f6b3f"/></marker>
+<marker id="ha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#c9731a"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="960" height="680"/>
+<text class="tb" x="24" y="30">vault-inbox の全体像（Vault のルート = カレントフォルダ）</text>
+
+<g transform="translate(24 50)">
+<rect class="card" x="0" y="0" width="190" height="120" rx="8"/>
+<text class="tb" x="14" y="26">inbox/</text>
+<text class="t" x="14" y="50">利用者が資料を直接置く</text>
+<text class="tm" x="14" y="72">md・txt・html・pdf</text>
+<text class="tm" x="14" y="90">docx・xlsx・pptx</text>
+</g>
+
+<g transform="translate(270 50)">
+<rect class="cmd" x="0" y="0" width="220" height="56" rx="8"/>
+<text class="tw" x="14" y="24">/vault-inbox:organize</text>
+<text class="tw" x="14" y="44">1 回だけ調べて整理</text>
+<rect class="cmd" x="0" y="70" width="220" height="56" rx="8"/>
+<text class="tw" x="14" y="94">/vault-inbox:watch</text>
+<text class="tw" x="14" y="114">常時監視（セッション内）</text>
+</g>
+
+<g transform="translate(560 50)">
+<rect class="card" x="0" y="0" width="376" height="206" rx="8"/>
+<text class="tb" x="14" y="26">整理済みフォルダ（最大 5 階層）</text>
+<text class="t" x="14" y="50">project/&lt;プロジェクト&gt;/&lt;分類&gt;/…</text>
+<text class="t" x="14" y="70">shared/&lt;種類&gt;/&lt;サブ&gt;/…</text>
+<rect class="soft" x="14" y="86" width="348" height="46" rx="6"/>
+<text class="t" x="24" y="106">要件.pdf などの原本</text>
+<text class="tm" x="24" y="124">通常のファイル。名前も内容も変えない</text>
+<rect class="soft" x="14" y="142" width="348" height="52" rx="6"/>
+<text class="t" x="24" y="162">_index.md = 目次ノート（自動生成）</text>
+<text class="tm" x="24" y="182">資料へのリンクと、その資料に関する関係を書き出す</text>
+</g>
+
+<path class="ar" d="M214 110 L270 110"/>
+<path class="ar" d="M490 78 L560 90"/>
+<path class="ar" d="M490 148 L560 130"/>
+<text class="tm" x="494" y="68">要約・分類先は Claude が判断</text>
+<text class="ta" x="494" y="166">新しい分類先は選択式で承認</text>
+
+<g transform="translate(24 200)">
+<rect class="card" x="0" y="0" width="466" height="170" rx="8"/>
+<text class="tb" x="14" y="26">追従（人が資料を動かしたとき）</text>
+<text class="t" x="14" y="52">hash と前回の場所で、移動・改名・内容の更新を見分ける</text>
+<text class="t" x="14" y="76">見分けられない資料・行き先のない関係は、選択式で確認</text>
+<text class="tm" x="14" y="100">登録のない原本は「登録しない」を記録して、再確認しない</text>
+<text class="tm" x="14" y="120">watch は自分（organize・ask）の書き込みには反応しない</text>
+<text class="tm" x="14" y="140">取り込めない資料・同じ内容・同じ名前は inbox/ に残して知らせる</text>
+</g>
+<path class="ar" d="M490 280 L560 240"/>
+
+<g transform="translate(24 410)">
+<rect class="card" x="0" y="0" width="316" height="220" rx="8"/>
+<text class="tb" x="14" y="26">.vault-inbox/（Obsidian は読まない）</text>
+<text class="t" x="14" y="52">メタデータ（作り直せない）</text>
+<text class="tm" x="14" y="72">id・hash・場所・日付・タグ・要約・関係・語彙</text>
+<text class="t" x="14" y="100">索引: SQLite FTS5（trigram）</text>
+<text class="t" x="14" y="122">text/: 抽出した全文</text>
+<text class="tm" x="14" y="148">索引・全文は organize が作り直せる</text>
+<text class="tm" x="14" y="168">3 文字未満の語は全文を直接探して補う</text>
+<text class="ta" x="14" y="194">メタデータはバックアップが要る</text>
+</g>
+<path class="ar" d="M174 370 L174 410"/>
+<path class="ar" d="M350 120 L350 200"/>
+
+<g transform="translate(400 410)">
+<rect class="cmd" x="0" y="0" width="220" height="56" rx="8"/>
+<text class="tw" x="14" y="24">/vault-inbox:ask &lt;問い&gt;</text>
+<text class="tw" x="14" y="44">格納した資料から回答</text>
+</g>
+<path class="ar" d="M340 438 L400 438"/>
+<text class="tm" x="346" y="430">検索</text>
+
+<g transform="translate(650 400)">
+<rect class="card" x="0" y="0" width="286" height="230" rx="8"/>
+<text class="tb" x="14" y="26">回答の作り方</text>
+<text class="t" x="14" y="52">関係を両方向に 1 つ先まで辿る</text>
+<text class="t" x="14" y="74">旧版（supersedes）は外す</text>
+<text class="t" x="14" y="96">矛盾（conflicts_with）は併記</text>
+<text class="t" x="14" y="118">根拠の原本へのリンクを付ける</text>
+<text class="ta" x="14" y="146">回答は保存しない</text>
+</g>
+<path class="ar" d="M620 438 L650 438"/>
+
+<g transform="translate(400 500)">
+<rect class="soft" x="0" y="0" width="230" height="130" rx="8"/>
+<text class="tb" x="14" y="26">関係の記録</text>
+<text class="t" x="14" y="50">回答のあと、候補を選択式で提示</text>
+<text class="t" x="14" y="72">承認されたものだけを、メタデータに</text>
+<text class="t" x="14" y="94">記録し、_index.md に書き出す</text>
+</g>
+<path class="ara" d="M510 466 L510 500"/>
+<path class="ara" d="M630 565 L650 565"/>
+<text class="ta" x="24" y="660">橙の破線: 記録した関係は、次の回答の材料になる（精度向上）</text>
+</svg>

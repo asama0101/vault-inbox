@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 440" width="800" height="440" font-family="'Yu Gothic', 'Meiryo', 'Noto Sans CJK JP', sans-serif">
+  <title>vault-inbox の動作</title>
+  <desc>整理は、inbox/ の資料を Claude Code が読み、project/ か shared/ へ移し、要約ノートか md のプロパティを更新する。watch は inbox/ の変化で整理を自動実行する。質問は、索引と全文を検索して、根拠リンク付きで答え、承認した関係を記録する。</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+  </defs>
+  <rect width="800" height="440" fill="#ffffff"/>
+
+  <!-- 整理 -->
+  <text x="12" y="24" font-size="15" font-weight="bold" fill="#111">① 整理: organize（手動）と watch（自動）</text>
+  <rect x="12" y="38" width="776" height="44" rx="6" fill="#f4f4f4" stroke="#555" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="400" y="65" font-size="13" text-anchor="middle" fill="#111">watch: inbox/・project/・shared/ の変化を監視し、落ち着くたびに、整理を自動で実行する</text>
+  <line x1="294" y1="82" x2="294" y2="118" stroke="#333" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#a)"/>
+  <text x="304" y="106" font-size="12" fill="#333">変化を検知</text>
+
+  <rect x="12" y="120" width="140" height="76" rx="6" fill="#eaf2fb" stroke="#1f5fa8" stroke-width="2"/>
+  <text x="82" y="146" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">inbox/</text>
+  <text x="82" y="166" font-size="12" text-anchor="middle" fill="#111">資料を置く</text>
+  <text x="82" y="184" font-size="12" text-anchor="middle" fill="#111">md・pdf・docx など</text>
+
+  <rect x="224" y="120" width="140" height="76" rx="6" fill="#eaf2fb" stroke="#1f5fa8" stroke-width="2"/>
+  <text x="294" y="146" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">Claude Code</text>
+  <text x="294" y="166" font-size="12" text-anchor="middle" fill="#111">要約・日付を</text>
+  <text x="294" y="184" font-size="12" text-anchor="middle" fill="#111">付けて、分類先を決める</text>
+
+  <rect x="436" y="120" width="140" height="76" rx="6" fill="#eaf2fb" stroke="#1f5fa8" stroke-width="2"/>
+  <text x="506" y="146" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">project/ か shared/</text>
+  <text x="506" y="166" font-size="12" text-anchor="middle" fill="#111">原本を分類先へ</text>
+  <text x="506" y="184" font-size="12" text-anchor="middle" fill="#111">移す</text>
+
+  <rect x="648" y="120" width="140" height="76" rx="6" fill="#eaf2fb" stroke="#1f5fa8" stroke-width="2"/>
+  <text x="718" y="146" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">要約・関係を記録</text>
+  <text x="718" y="166" font-size="12" text-anchor="middle" fill="#111">md はプロパティ</text>
+  <text x="718" y="184" font-size="12" text-anchor="middle" fill="#111">他は隣の要約ノート</text>
+
+  <line x1="152" y1="158" x2="222" y2="158" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="187" y="150" font-size="12" text-anchor="middle" fill="#333">読む</text>
+  <line x1="364" y1="158" x2="434" y2="158" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="399" y="150" font-size="12" text-anchor="middle" fill="#333">移す</text>
+  <line x1="576" y1="158" x2="646" y2="158" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="611" y="150" font-size="12" text-anchor="middle" fill="#333">更新</text>
+
+  <text x="12" y="220" font-size="12" fill="#333">※ 取り込めない資料・重複した資料・未承認の資料は、inbox/ に残して、理由を報告する。</text>
+
+  <!-- 質問 -->
+  <text x="12" y="262" font-size="15" font-weight="bold" fill="#111">② 質問: ask</text>
+
+  <rect x="12" y="280" width="140" height="76" rx="6" fill="#fdf3e3" stroke="#a8641f" stroke-width="2"/>
+  <text x="82" y="306" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">質問する</text>
+  <text x="82" y="326" font-size="12" text-anchor="middle" fill="#111">/vault-inbox:ask で</text>
+  <text x="82" y="344" font-size="12" text-anchor="middle" fill="#111">知りたいことを書く</text>
+
+  <rect x="224" y="280" width="140" height="76" rx="6" fill="#fdf3e3" stroke="#a8641f" stroke-width="2"/>
+  <text x="294" y="306" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">資料を検索</text>
+  <text x="294" y="326" font-size="12" text-anchor="middle" fill="#111">登録済みの要約と</text>
+  <text x="294" y="344" font-size="12" text-anchor="middle" fill="#111">全文から探す</text>
+
+  <rect x="436" y="280" width="140" height="76" rx="6" fill="#fdf3e3" stroke="#a8641f" stroke-width="2"/>
+  <text x="506" y="306" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">回答する</text>
+  <text x="506" y="326" font-size="12" text-anchor="middle" fill="#111">根拠の資料への</text>
+  <text x="506" y="344" font-size="12" text-anchor="middle" fill="#111">リンクを付ける</text>
+
+  <rect x="648" y="280" width="140" height="76" rx="6" fill="#fdf3e3" stroke="#a8641f" stroke-width="2"/>
+  <text x="718" y="306" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">関係を記録</text>
+  <text x="718" y="326" font-size="12" text-anchor="middle" fill="#111">承認した分だけ</text>
+  <text x="718" y="344" font-size="12" text-anchor="middle" fill="#111">残す</text>
+
+  <line x1="152" y1="318" x2="222" y2="318" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="187" y="310" font-size="12" text-anchor="middle" fill="#333">検索</text>
+  <line x1="364" y1="318" x2="434" y2="318" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="399" y="310" font-size="12" text-anchor="middle" fill="#333">答える</text>
+  <line x1="576" y1="318" x2="646" y2="318" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="611" y="310" font-size="12" text-anchor="middle" fill="#333">提案</text>
+
+  <line x1="718" y1="280" x2="718" y2="198" stroke="#333" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#a)"/>
+  <text x="728" y="244" font-size="12" fill="#333">関係を反映</text>
+
+  <!-- 凡例 -->
+  <text x="12" y="392" font-size="12" font-weight="bold" fill="#111">凡例</text>
+  <rect x="56" y="380" width="28" height="16" rx="3" fill="#eaf2fb" stroke="#1f5fa8" stroke-width="2"/>
+  <text x="92" y="393" font-size="12" fill="#111">整理の手順（青・実線の枠）</text>
+  <rect x="262" y="380" width="28" height="16" rx="3" fill="#fdf3e3" stroke="#a8641f" stroke-width="2"/>
+  <text x="298" y="393" font-size="12" fill="#111">質問の手順（橙・実線の枠）</text>
+  <rect x="468" y="380" width="28" height="16" rx="3" fill="#f4f4f4" stroke="#555" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="504" y="393" font-size="12" fill="#111">自動で動く部分（点線の枠）</text>
+  <line x1="56" y1="418" x2="84" y2="418" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="92" y="422" font-size="12" fill="#111">処理の流れ</text>
+  <line x1="200" y1="418" x2="228" y2="418" stroke="#333" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#a)"/>
+  <text x="236" y="422" font-size="12" fill="#111">通知・反映（点線の矢印）</text>
+</svg>

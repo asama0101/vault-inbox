@@ -1,0 +1,12 @@
+{
+  "name": "vault-inbox",
+  "owner": { "name": "asama0101" },
+  "description": "vault-inbox プラグインの配布用マーケットプレイス。Obsidian Vault の inbox を整理・監視・質問する。",
+  "plugins": [
+    {
+      "name": "vault-inbox",
+      "source": "./vault-inbox",
+      "description": "Obsidian Vault の inbox を整理・監視・質問するプラグイン。"
+    }
+  ]
+}
