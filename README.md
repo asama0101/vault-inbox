@@ -23,7 +23,16 @@ Obsidian の Vault の `inbox/` に置いた資料を、Claude Code が読んで
 
 ## 導入方法
 
-Python 3.10 以上（`python` コマンドで起動できること）と、Claude Code が必要。Obsidian の Vault（フォルダ）を用意する。テストは Windows 11 で実行した。macOS・Linux と、Claude Code での実機の動作は未確認。
+Claude Code と Obsidian の Vault（フォルダ）を用意する。動作に必要なものは次のとおり。
+
+| 項目 | 内容 |
+|---|---|
+| 実行環境 | Python 3.10 以上（`python` コマンドで起動できること） |
+| 外部コマンド | なし |
+| ライブラリ | `pypdf`・`python-docx`・`openpyxl`・`python-pptx`（`requirements.txt`。PDF・Office を読むときだけ必要） |
+| ネットワーク接続 | 不要（`doctor` の版の確認だけ、github.com に接続する） |
+
+対応 OS: 動作を確かめたのは Windows 11 のテストのみ。macOS・Linux と、Claude Code での実機の動作は未確認。
 
 Claude Code で、マーケットプレイスから入れる（未検証。コマンド名は Claude Code の仕様から書いた）。
 
@@ -34,6 +43,14 @@ Claude Code で、マーケットプレイスから入れる（未検証。コ�
 
 PDF・Office を読む依存（`pypdf` など）は、自動では入らない。入っていなければ、`/vault-inbox:init` が知らせる。
 
+### オフラインで入れる
+
+1. ネットワークのある環境で取得したリポジトリを、媒体で持ち込む。
+2. `/plugin marketplace add <持ち込んだリポジトリのパス>` を実行する。
+3. `/plugin install vault-inbox@vault-inbox` を実行する。
+
+依存は、ネットワークのある環境で取得した `pypdf` などのパッケージを持ち込み、`python -m pip install` で入れる（未検証）。
+
 ### clone して入れる
 
 依存を `python` と同じ Python に入れ、Vault のルートでプラグインを読み込ませる（未検証）。
@@ -42,6 +59,18 @@ PDF・Office を読む依存（`pypdf` など）は、自動では入らない�
 python -m pip install -r <このリポジトリ>/vault-inbox/requirements.txt
 claude --plugin-dir <このリポジトリ>/vault-inbox
 ```
+
+### 環境を確かめる（`doctor`）
+
+何も変更せずに、実行環境・保存先・依存・プラグインの版を 1 行ずつ表示する。`[NG]` があると終了コードは 3 になる。`--data` には、プラグインの保存先（`${CLAUDE_PLUGIN_DATA}`。通常は `~/.claude/plugins/data/` の下の `vault-inbox` のフォルダ）を渡す（未検証）。
+
+```
+python -X utf8 "<プラグインのパス>/scripts/vault_inbox.py" doctor --data "<保存先のパス>"
+```
+
+### アンインストール
+
+`/plugin uninstall vault-inbox@vault-inbox` で消えるのは、プラグイン本体。利用者の Vault と `.vault-inbox/`、保存先（`${CLAUDE_PLUGIN_DATA}`）は残る。
 
 ## 使い方
 
@@ -94,8 +123,16 @@ Vault のルートで Claude Code を開き、初回に 1 度だけ `init` を�
 
 `watch` は Monitor ツールが必要。使えない環境では案内が出るので、代わりに `/vault-inbox:organize` を、必要なときに実行する。
 
+### python が見つからない（`doctor` が起動しない）
+
+Python 3.10 以上を入れ、`python --version` で版が出ることを確かめる。Windows で `python` が通らないときは、`py -3 -X utf8` を `python -X utf8` の代わりに使う。
+
 ### 資料が `inbox/` に残る
 
 文字が取れない PDF（スキャン）、壊れた資料、パスワード付きの資料は、取り込めずに `inbox/` に残る。内容が同じ資料は、2 つ目以降が取り込まれない。
 
 実機での確認の手順と、既知の制限は [docs/manual-check.md](docs/manual-check.md) にある。
+
+## ライセンス
+
+MIT。全文は [LICENSE](LICENSE)。依存ライブラリの出典は `vault-inbox/NOTICE` にある。

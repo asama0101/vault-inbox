@@ -2,6 +2,10 @@
 name: init
 description: Vault を vault-inbox 用に初期化する（inbox/・project/・shared/・.vault-inbox/ を作る）。初めて使うときに実行する。
 disable-model-invocation: true
+allowed-tools:
+  - AskUserQuestion
+  - Bash(python -X utf8 "${CLAUDE_PLUGIN_ROOT}/scripts/vault_inbox.py" status *)
+  - Bash(python -X utf8 "${CLAUDE_PLUGIN_ROOT}/scripts/vault_inbox.py" init *)
 ---
 
 # vault-inbox 初期化

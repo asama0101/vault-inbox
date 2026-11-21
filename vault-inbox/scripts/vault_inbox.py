@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from vault_inbox import (
+    doctor,  # noqa: E402
     extract,  # noqa: E402
     index,  # noqa: E402
     indexmd,  # noqa: E402
@@ -36,6 +37,12 @@ def _cmd_status(args) -> dict:
         "has_obsidian": vault.has_obsidian(root),
         "missing_deps": extract.missing_dependencies(),
     }
+
+
+def _cmd_doctor(args) -> int:
+    text, code = doctor.run(Path(args.data))
+    sys.stdout.write(text)
+    return code
 
 
 def _store(args) -> tuple[Path, MetaStore]:
@@ -268,6 +275,9 @@ def register(subparsers) -> None:
         p.add_argument("--owner", required=True, choices=locking.OWNERS)
         p.add_argument("--name", default="session", choices=tuple(locking.NAMES))
         p.set_defaults(func=func)
+    dp = subparsers.add_parser("doctor")
+    dp.add_argument("--data", required=True)
+    dp.set_defaults(func=_cmd_doctor)
     ip = subparsers.add_parser("inbox-mark")
     ip.add_argument("--root", default=".")
     for opt in ("name", "hash", "status"):
@@ -343,7 +353,7 @@ def register(subparsers) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="vault_inbox")
+    parser = argparse.ArgumentParser(prog="vault_inbox", fromfile_prefix_chars="@")
     sub = parser.add_subparsers(dest="cmd", required=True)
     register(sub)
     return parser
@@ -352,6 +362,8 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
     result = args.func(args)
+    if isinstance(result, int):
+        return result
     if result is not None:
         sys.stdout.write(json.dumps(result, ensure_ascii=False) + "\n")
     return 0

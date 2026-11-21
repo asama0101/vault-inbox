@@ -41,16 +41,14 @@ def test_init_skill_tells_how_to_install_missing_dependencies():
 
 def test_organize_skill_refreshes_meta_after_regroup():
     """regroup only moves path/hash/text; the summary of the old content would stay."""
-    line = next(
-        ln for ln in _text("organize").splitlines() if "--action='regroup'" in ln
-    )
-    assert "SCRIPT update-meta --id=" in line
+    line = next(ln for ln in _text("organize").splitlines() if "--action=regroup" in ln)
+    assert "SCRIPT update-meta @ARGS" in line
 
 
 def test_skills_keep_every_question_within_four_options():
     """AskUserQuestion takes 2-4 options per question; Other is added by itself."""
     organize = _text("organize")
-    regroup = next(ln for ln in organize.splitlines() if "--action='regroup'" in ln)
+    regroup = next(ln for ln in organize.splitlines() if "--action=regroup" in ln)
     assert "ほかの候補を見る" in regroup  # more than 4 partners: page through them
     proposal = next(ln for ln in organize.splitlines() if "新しい分類先を" in ln)
     assert "ほかの案は 2 件まで" in proposal  # 推奨 + 2 + 配置しない = 4
@@ -233,6 +231,58 @@ def test_rebuild_subcommand(vault, capsys):
     assert json.loads(capsys.readouterr().out) == {"rebuilt": 1}
 
 
+def test_update_meta_takes_awkward_values_from_an_args_file(vault, tmp_path):
+    """`@file` (one `--opt=value` per line, UTF-8) carries ', ;, quotes and Japanese
+    through unchanged, with no shell in between."""
+    import subprocess
+    import sys
+
+    store = MetaStore(vault)
+    store.load()
+    store.put(
+        Doc(id="d1", hash="h", path="shared/a.md", date="2026-01-01", summary="s")
+    )
+    store.save()
+    summary = '-it\'s; "q" $(rm -rf x) `y` 日本語'
+    args = tmp_path / "args.txt"
+    args.write_text(
+        f"--id=d1\n--date=2026-02-02\n--summary={summary}\n", encoding="utf-8"
+    )
+    script = PLUGIN / "scripts" / "vault_inbox.py"
+    r = subprocess.run(
+        [
+            sys.executable,
+            "-X",
+            "utf8",
+            str(script),
+            "update-meta",
+            f"--root={vault}",
+            f"@{args}",
+        ],
+        capture_output=True,
+        encoding="utf-8",
+        timeout=60,
+    )
+    assert json.loads(r.stdout) == {"ok": True}
+    store2 = MetaStore(vault)
+    store2.load()
+    assert store2.get("d1").summary == summary
+
+
+@pytest.mark.parametrize("name", SKILLS)
+def test_allowed_tools_name_only_real_subcommands(name):
+    head = _text(name).split("---", 2)[1]
+    assert "allowed-tools:" in head
+    sub = next(a for a in _cli().build_parser()._actions if a.dest == "cmd")
+    prefix = 'Bash(python -X utf8 "${CLAUDE_PLUGIN_ROOT}/scripts/vault_inbox.py" '
+    bash = [ln.strip()[2:] for ln in head.splitlines() if "Bash(" in ln]
+    assert bash
+    for entry in bash:
+        assert entry.startswith(prefix), entry
+        assert entry.endswith(" *)"), entry
+        assert entry[len(prefix) : -3] in sub.choices, entry
+
+
 def test_organize_dangling_question_uses_remove_and_keep():
     t = _text("organize")
     assert "SCRIPT relation-remove" in t
@@ -268,7 +318,7 @@ def test_watch_runs_passes_under_pass_lock_owner_watch():
 def test_organize_marks_leftovers_and_reports_only_unseen_under_watch():
     t = _text("organize")
     assert "SCRIPT inbox-mark" in t
-    assert "--status='declined'" in t
+    assert "--status=declined" in t
     assert "`seen` が false" in t
     assert "`declined`" in t
 
@@ -300,8 +350,8 @@ def test_organize_destinations_only_from_existing_or_approved():
 def test_every_cli_value_is_single_quoted(name):
     t = _text(name)
     if name in ("organize", "ask"):
-        assert "`--opt='value'`" in t
-        assert "`'\\''`" in t
+        assert "@ARGS" in t
+        assert "`'\\''`" not in t
     calls = re.findall(r"`(?:SCRIPT|python) [^`]*`", t)
     assert calls
     for call in calls:
@@ -322,11 +372,11 @@ def test_ask_retries_search_before_saying_nothing_matches():
 
 def test_organize_declined_only_for_refused_destination():
     t = _text("organize")
-    declined = [ln for ln in t.splitlines() if "--status='declined'" in ln]
+    declined = [ln for ln in t.splitlines() if "--status=declined" in ln]
     assert len(declined) == 1
     assert "承認されなかった" in declined[0]
-    assert "--status='name_collision' --id='<id>'" in t
-    assert "--status='extract_failed' --id='<id>'" in t
+    assert "--status=name_collision" in t
+    assert "--status=extract_failed" in t
     bad_dest = next(ln for ln in t.splitlines() if '"bad_destination"' in ln)
     assert "選び直" in bad_dest
     assert "inbox-mark" not in bad_dest
@@ -353,7 +403,7 @@ def test_organize_saves_baseline_at_start_and_absorbs_own_writes_at_end():
 
 def test_organize_records_failed_and_lists_all_reasons():
     t = _text("organize")
-    assert "--status='failed' --id='<id>'" in t
+    assert "--status=failed" in t
     report = t.split("### 最終報告", 1)[1]
     for reason in ("`failed`", "`bad_name`", "`skipped`", "`name_collision`"):
         assert reason in report, reason
