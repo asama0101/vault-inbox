@@ -62,7 +62,7 @@ claude --plugin-dir <このリポジトリ>/vault-inbox
 
 ### 環境を確かめる（`doctor`）
 
-何も変更せずに、実行環境・保存先・依存（PDF・Office のライブラリ、SQLite FTS5）・プラグインの版を、1 行ずつ表示する。行の頭は `[OK]`（満たしている）・`[NG]`（必須の条件を満たしていない。Python の版・保存先・SQLite FTS5 trigram など）・`[任意]`（使う機能のときだけ要る依存が足りない）・`[情報]`（版の確認結果）。対処があれば、次の行に `  → ` で続く。`[NG]` があると終了コードは 3 になる。`--data` には、プラグインの保存先（`${CLAUDE_PLUGIN_DATA}`。通常は `~/.claude/plugins/data/` の下の `vault-inbox` のフォルダ）を渡す（未検証）。
+何も変更せずに、実行環境・保存先・依存（PDF・Office のライブラリ、SQLite FTS5）・プラグインの版を、1 行ずつ表示する。行の頭は `[OK]`（満たしている）・`[NG]`（必須の条件を満たしていない。Python の版・保存先・SQLite FTS5 trigram など）・`[任意]`（使う機能のときだけ要る依存が足りない）・`[情報]`（版の確認結果）。対処があれば、次の行に `  → ` で続く。`[NG]` があると終了コードは 3 になる。`--data` には、プラグインの保存先（`${CLAUDE_PLUGIN_DATA}`）を渡す。保存先は `~/.claude/plugins/data/<プラグイン名>-<マーケットプレイス名>/` で、`--plugin-dir` で読み込んだときは `vault-inbox-inline`（実機で確認）。マーケットプレイスから入れたときは `vault-inbox-vault-inbox` になる見込み（未検証）。
 
 ```
 python -X utf8 "<プラグインのパス>/scripts/vault_inbox.py" doctor --data "<保存先のパス>"
