@@ -356,6 +356,69 @@ def test_args_file_rejects_abbreviations_and_nested_files(
     assert expected in r.stderr
 
 
+def _run_resolve(vault, tmp_path, lines):
+    import subprocess
+    import sys
+
+    args = tmp_path / "args.txt"
+    args.write_bytes(("\n".join(lines) + "\n").encode())
+    script = PLUGIN / "scripts" / "vault_inbox.py"
+    return subprocess.run(
+        [sys.executable, "-X", "utf8", str(script), "resolve"]
+        + [f"--root={vault}", f"@{args}"],
+        capture_output=True,
+        encoding="utf-8",
+        timeout=60,
+    )
+
+
+@pytest.mark.parametrize(
+    "extra",
+    ["--missing-id=d1", "--new-path=shared/b.md", "--id=d1"],
+)
+def test_resolve_rejects_options_unrelated_to_the_action(vault, tmp_path, extra):
+    """A raw newline left in a value must not add `--missing-id=<id>` to a register
+    call and so skip the bad_path check."""
+    store = MetaStore(vault)
+    store.load()
+    store.put(
+        Doc(id="d1", hash="h", path="shared/a.md", date="2026-01-01", summary="s")
+    )
+    store.save()
+    (vault / "shared" / "a.md").write_text("x", encoding="utf-8")
+    r = _run_resolve(
+        vault,
+        tmp_path,
+        ["--action=register", "--path=shared/a.md", "--date=2026-01-01", extra],
+    )
+    assert r.returncode == 2
+    assert r.stdout == ""
+    assert "register" in r.stderr
+    store2 = MetaStore(vault)
+    store2.load()
+    assert len(store2.docs()) == 1
+
+
+def test_resolve_accepts_the_options_of_each_action(vault, tmp_path):
+    store = MetaStore(vault)
+    store.load()
+    store.put(Doc(id="d1", hash="h", path="shared/a.md", date="2026-01-01", summary=""))
+    store.put(Doc(id="d2", hash="h", path="shared/c.md", date="2026-01-01", summary=""))
+    store.save()
+    for name in ("b.md", "e.md", "f.md"):
+        (vault / "shared" / name).write_text(name, encoding="utf-8")
+    cases = [
+        ["--action=register", "--path=shared/b.md", "--date=2026-01-01", "--summary=s"],
+        ["--action=regroup", "--missing-id=d1", "--new-path=shared/e.md"],
+        ["--action=ignore", "--path=shared/f.md"],
+        ["--action=drop", "--id=d2"],
+    ]
+    for lines in cases:
+        r = _run_resolve(vault, tmp_path, lines)
+        assert r.returncode == 0, r.stderr
+        assert json.loads(r.stdout)["ok"] is True, lines
+
+
 def test_subcommand_abbreviation_is_rejected(vault):
     import subprocess
     import sys

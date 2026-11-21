@@ -111,7 +111,22 @@ def _cmd_scan(args) -> dict:
     return follow.scan(root, store)
 
 
+_RESOLVE_OPTIONS = {
+    "register": ("path", "date", "summary"),
+    "regroup": ("missing_id", "new_path"),
+    "ignore": ("path",),
+    "drop": ("id",),
+}
+
+
 def _cmd_resolve(args) -> dict:
+    allowed = _RESOLVE_OPTIONS.get(args.action)
+    if allowed is not None:
+        for opt in ("missing_id", "new_path", "id", "path", "date", "summary"):
+            if getattr(args, opt) and opt not in allowed:
+                args.parser.error(
+                    f"--action={args.action} に --{opt.replace('_', '-')} は使えません"
+                )
     root, store = _store(args)
     kw = {
         "missing_id": args.missing_id,
@@ -312,7 +327,7 @@ def register(subparsers) -> None:
     for opt in ("missing-id", "new-path", "id", "path", "date"):
         rp.add_argument(f"--{opt}")
     rp.add_argument("--summary", default="")
-    rp.set_defaults(func=_cmd_resolve)
+    rp.set_defaults(func=_cmd_resolve, parser=rp)
     up = subparsers.add_parser("update-meta", allow_abbrev=False)
     up.add_argument("--root", default=".")
     up.add_argument("--id", required=True)
