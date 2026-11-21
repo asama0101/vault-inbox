@@ -76,7 +76,7 @@ allowed-tools:
 `SCRIPT scan` を実行する。結果のキーごとに扱う。
 
 - `moved`: 自動で追従済み。件数を知らせる。
-- `updated`（中身が変わった資料。`id`・`path`）: 全文を `.vault-inbox/text/<id>.txt` から読み、要約・日付（YYYY-MM-DD）を作り直し、引数ファイルに `--id=<id>`・`--date=<日付>`・`--summary=<要約>` を書き、`SCRIPT update-meta @ARGS` で反映する。`{"error": "unknown_id"}` なら、知らせて次へ。
+- `updated`（中身が変わった資料。`id`・`path`）: 全文を `.vault-inbox/text/<id>.txt` から読み（読み方は ④ の 1）、要約・日付（YYYY-MM-DD）を作り直し、引数ファイルに `--id=<id>`・`--date=<日付>`・`--summary=<要約>` を書き、`SCRIPT update-meta @ARGS` で反映する。`{"error": "unknown_id"}` なら、知らせて次へ。
 - `duplicates`（`path`・`same_as`）: 同じ中身の資料が既にある。1 回だけ知らせる（次回以降は出ない）。
 - `failed`（`path`・`reason`）: 読み取れなかった資料。理由つきで知らせる。
 - `resolve` が `{"error": "bad_path"}` を返したら（`project/`・`shared/` の外、隠しフォルダ、ほかの資料が使っているパス）、知らせて次へ。
@@ -90,7 +90,7 @@ allowed-tools:
     - 選択肢は上の 3 つだけにする（「保留する」は足さない）。
   - `missing`（`id`・`path`）: 「索引から外す」（`SCRIPT resolve --action='drop' --id='<id>'`）か「保留する」（何もしない。次回また聞く）。
   - `new`（`path`・`hash`）: 「新規として登録する」か「登録しない」。
-    - 登録する: 全文を読んで要約・日付（YYYY-MM-DD）を作り、引数ファイルに `--action=register`・`--path=<path>`・`--date=<日付>`・`--summary=<要約>` を書き、`SCRIPT resolve @ARGS`。
+    - 登録する: 全文を読んで（読み方は ④ の 1）要約・日付（YYYY-MM-DD）を作り、引数ファイルに `--action=register`・`--path=<path>`・`--date=<日付>`・`--summary=<要約>` を書き、`SCRIPT resolve @ARGS`。
     - 登録しない: 引数ファイルに `--action=ignore`・`--path=<path>` を書き、`SCRIPT resolve @ARGS`（同じ中身は以後聞かない）。
 - 関係の確認: `SCRIPT dangling` を実行する。`relations`（`src`・`dst`・`kind`）の各関係について、AskUserQuestion で「消す」「残す」を聞く。引数ファイルに `--src=<src>`・`--dst=<dst>`・`--kind=<kind>` を書き、消すなら `SCRIPT relation-remove @ARGS`、残すなら `SCRIPT relation-keep @ARGS`（残した関係は、以後聞かない）。
 
@@ -104,7 +104,7 @@ allowed-tools:
 - `declined`（前に利用者が分類先を承認せず、それから内容が変わっていない資料）: 分類先を聞き直さない。
 - `seen` が true の `ready`（前の実行で配置できなかった資料。`reason` に前の理由。例: `name_collision`）: `watch` の 2 回目以降の実行では、何もしない（知らせない）。手動の `organize` と `watch` の初回の実行では、下の手順で配置をやり直す。
 - `ready`: 1 件ずつ、次を行う。
-  1. 全文 `text_path`（`.vault-inbox/text/<id>.txt`）を読む。空なら `extract_failed`（空）として `inbox/` に残し、6 へ。
+  1. 全文 `text_path`（`.vault-inbox/text/<id>.txt`）を読む。空なら `extract_failed`（空）として `inbox/` に残し、6 へ。全文は長いことがある。要約・日付には、先頭から約 2 万字（`limit` で絞った 1 回の Read）で足りる。Read が上限（1 回約 2.2 万字、256KB 超）のエラーを返したら、`offset`・`limit` を付けて読み直す。
   2. 要約・日付（YYYY-MM-DD。文書内の日付、なければ今日）を作る。
   3. 分類先を選ぶ。`project/<プロジェクト>/<分類>/…` か `shared/<種類>/<サブ>/…` の形で、`project/`・`shared/` の既存のフォルダを見て決める。階層は、`project/`・`shared/` を含めて 5 階層以内。
   4. 既存に合うものがなければ、新しい分類先を AskUserQuestion の選択肢で提案する（推奨案を先頭に、ほかの案は 2 件まで、「配置しない」）。承認されなければ（「配置しない」を含む）、`inbox/` に残す（理由: 未承認）。6 へ。
@@ -133,7 +133,7 @@ allowed-tools:
 
 - `duplicate`（重複。同じ中身の資料のパスを添える）
 - `unsupported`（対応しない形式）
-- `extract_failed`（読み取れない。空のファイルを含む）
+- `extract_failed`（読み取れない。空のファイルと、`missing_dependency: <pip 名>` を含む）
 - `name_collision`（分類先に同名の資料がある）
 - `bad_name`（ファイル名が正しくない）
 - `skipped`（サブフォルダ・一時ファイルなど、対象にしないもの）

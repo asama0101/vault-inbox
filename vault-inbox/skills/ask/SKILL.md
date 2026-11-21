@@ -44,7 +44,8 @@ allowed-tools:
 ## 手順
 
 1. `SCRIPT status` を実行する。`initialized` が false なら、`init` を案内して止まる。
-2. 引数ファイルに `--query=<質問のキーワード>` を書き、`SCRIPT search @ARGS` を実行する。`ids` と `docs`（`id`・`path`・`summary`）が返る。
+2. 利用者の質問は `$ARGUMENTS`。ここからキーワード（名詞・固有名詞 1〜3 語、空白区切り）を取る。`$ARGUMENTS` は Bash のコマンド文字列に埋め込まない。引数ファイルに `--query=<キーワード>` を書き、`SCRIPT search @ARGS` を実行する。`ids`・`docs`（`id`・`path`・`summary`）・`truncated`・`total` が返る。
+   - `truncated` が true のときは、ヒットが 20 件を超えている。語を足して絞り直すか、そのまま進めて回答に「全 `<total>` 件のうち上位 20 件だけを材料にした」と書く。
    - `ids` が空なら、語を減らす・核になる語だけにするなどして、1〜2 回まで検索し直す。それでも空なら、「該当する資料がありません」と答えて終わる。推測で答えない。
 3. `SCRIPT expand --ids='<id をカンマ区切り>'` を実行する。`materials`（回答に使う資料。差し替え前の古い版は含まれない）・`conflicts`（`[id, id]` の組）・`docs` が返る。
 4. `materials` の全文（`.vault-inbox/text/<id>.txt`）から、回答を作る。Read ツールは、1 回に約 2.2 万字（25,000 トークン）までしか返さず、256KB を超えるファイルは読めない。そのため、全文を頭から読まない。

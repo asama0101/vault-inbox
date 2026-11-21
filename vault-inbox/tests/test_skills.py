@@ -299,6 +299,32 @@ def test_args_file_splits_lines_only_on_newline(vault, tmp_path, sep):
     assert store2.get("d1").summary == summary
 
 
+@pytest.mark.parametrize(
+    "lines",
+    [
+        ["--id=d1", "--id=d2", "--date=2026-01-01", "--summary=s"],
+        ["--id=d1", "--root=/elsewhere", "--date=2026-01-01", "--summary=s"],
+    ],
+)
+def test_args_file_rejects_duplicate_options_and_root(vault, tmp_path, lines):
+    import subprocess
+    import sys
+
+    args = tmp_path / "args.txt"
+    args.write_bytes(("\n".join(lines) + "\n").encode())
+    script = PLUGIN / "scripts" / "vault_inbox.py"
+    r = subprocess.run(
+        [sys.executable, "-X", "utf8", str(script), "update-meta"]
+        + [f"--root={vault}", f"@{args}"],
+        capture_output=True,
+        encoding="utf-8",
+        timeout=60,
+    )
+    assert r.returncode == 2
+    assert r.stdout == ""
+    assert "引数ファイル" in r.stderr
+
+
 @pytest.mark.parametrize("name", SKILLS)
 def test_allowed_tools_never_grant_a_bare_write(name):
     """Write must be limited to the args file; a bare Write pre-approves any path."""

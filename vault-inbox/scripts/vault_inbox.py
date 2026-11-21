@@ -136,8 +136,13 @@ def _docs(store: MetaStore, ids: list[str]) -> list[dict]:
 def _cmd_search(args) -> dict:
     root, store = _store(args)
     index.ensure(root, store)
-    ids = index.search(root, store, args.query)
-    return {"ids": ids, "docs": _docs(store, ids)}
+    ids, total = index.search_with_total(root, store, args.query)
+    return {
+        "ids": ids,
+        "docs": _docs(store, ids),
+        "truncated": total > len(ids),
+        "total": total,
+    }
 
 
 def _cmd_expand(args) -> dict:
@@ -359,6 +364,19 @@ class _Parser(argparse.ArgumentParser):
     value taken from a document could start a new argument (`--id=evil`).
     """
 
+    def _check_file_options(self, lines):
+        """Rejects `--root` and repeated options (a later line would win)."""
+        seen = set()
+        for ln in lines:
+            if not ln.startswith("--"):
+                continue
+            name = ln.split("=", 1)[0]
+            if name == "--root":
+                self.error("引数ファイルに --root は書けません")
+            if name in seen:
+                self.error(f"引数ファイルに {name} が重複しています")
+            seen.add(name)
+
     def _read_args_from_files(self, arg_strings):
         out = []
         for arg in arg_strings:
@@ -374,6 +392,7 @@ class _Parser(argparse.ArgumentParser):
             if lines[-1] == "":
                 lines.pop()
             lines = [ln.removesuffix("\r") for ln in lines]
+            self._check_file_options(lines)
             out.extend(self._read_args_from_files(lines))
         return out
 
