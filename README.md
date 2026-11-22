@@ -39,6 +39,15 @@ python -m pip install -r <このリポジトリ>/vault-inbox/requirements.txt
 claude --plugin-dir <このリポジトリ>/vault-inbox
 ```
 
+### 更新
+
+マーケットプレイスから入れたときは、次を実行して、Claude Code を開き直す（未検証）。clone で入れたときは、clone を最新にして、依存を入れ直す。
+
+```
+/plugin marketplace update vault-inbox
+/plugin update vault-inbox@vault-inbox
+```
+
 ### 環境を確かめる・アンインストール
 
 - `doctor`: 何も変更せず、環境を 1 行ずつ表示する。`[NG]` があると終了コード 3。
@@ -66,8 +75,8 @@ Vault のルートで、初回に 1 度だけ `init` を実行する。
 >
 > - **原本を移す**: `organize`・`watch` は、既存の分類先に合う資料を確認なしで移す。元に戻す機能はない。誤分類は、`inbox/` に戻す前に「索引から外す」で登録を外す。
 > - **先に Vault をバックアップする**: `.vault-inbox/meta.json`（要約・関係の記録）は作り直せない。
-> - **md を書き換える**: `ask` で関係を承認したときも、登録済みの md の `要約`・`日付`・`関連` が書き換わり、手で直しても次の実行で戻る。
-> - **全文は Claude Code が読む**: Claude に渡してよい資料だけを `inbox/` に置く。全文は `.vault-inbox/text/` にも残る。
+> - **md を書き換える**: `ask` で関係を承認したときも、登録済みの md の `要約`・`日付`・`関連` が書き換わり、手で直しても次の実行で戻る。元に戻すには、バックアップから該当の md を戻す。
+> - **全文は Claude Code が読む**: Claude に渡してよい資料だけを `inbox/` に置く。Claude に渡した内容は取り消せない。全文は `.vault-inbox/text/` にも残るので、不要なら消す（`rebuild` で作り直せる）。
 > - **削除されるもの**: 資料がなくなった要約ノートと、旧版の `_index.md`・`.index.md`。印のない同名のファイルは消さない。
 
 ### フォルダ構成
