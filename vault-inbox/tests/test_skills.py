@@ -625,8 +625,11 @@ def test_watch_tells_that_later_passes_ask_for_approval():
 def test_watch_releases_its_own_leftover_pass_lock():
     """a refused approval can leave owner watch's pass lock; only one watch runs."""
     t = _text("watch")
-    assert "前の回が外し損ねた残り" in t
-    assert t.count("SCRIPT unlock --name='pass' --owner='watch'") >= 4
+    reading = t.split("## organize の手順の読み方", 1)[1].split("## 手順", 1)[0]
+    assert "前の回が外し損ねた残り" in reading  # every pass, not only the first
+    assert "より優先する" in reading
+    stop = next(ln for ln in t.splitlines() if ln.startswith("6. 停止は"))
+    assert stop.index("--name='pass'") < stop.index("unlock --owner='watch'`")
 
 
 @pytest.mark.parametrize("name", SKILLS)
