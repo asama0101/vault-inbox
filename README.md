@@ -23,10 +23,8 @@ Obsidian の Vault の `inbox/` に置いた資料を、Claude Code が読んで
 
 `inbox/` には md・txt・html・pdf・docx・xlsx・pptx を置ける。分類先は `project/`・`shared/` を含めて 5 階層まで（超えた分は切り詰められる）。内部の記録（資料の ID・要約・関係・全文の索引）は Vault の `.vault-inbox/` に保存される。
 
-```
-inbox/  ──(Claude Code が読む → 要約・日付・分類)──▶  project/<プロジェクト>/<分類>/   案件ごとの資料
-                                                      shared/<種類>/<サブ>/            案件をまたぐ資料
-```
+- `project/<プロジェクト>/<分類>/`: 案件ごとの資料
+- `shared/<種類>/<サブ>/`: 案件をまたぐ資料
 
 ### organize の 1 回の流れ
 
