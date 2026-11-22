@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 270" width="800" height="270" font-family="'Yu Gothic', 'Meiryo', 'Noto Sans CJK JP', sans-serif">
+  <title>ask の答え方</title>
+  <desc>質問からキーワードを 1〜3 語取り、全文検索する（ヒットは先頭 20 件まで）。全文を読むのは最大 5 件。根拠の資料へのリンク付きで会話で答え、保存しない。資料どうしの関係の候補は選択肢で示し、承認されたものだけを関連に記録する。</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+  </defs>
+  <rect width="800" height="270" fill="#ffffff"/>
+  <text x="12" y="24" font-size="15" font-weight="bold" fill="#111">ask の答え方（/vault-inbox:ask &lt;問い&gt;）</text>
+
+  <rect x="12" y="44" width="140" height="96" rx="6" fill="#fdf3e3" stroke="#a8641f" stroke-width="2"/>
+  <text x="82" y="68" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">1 検索</text>
+  <text x="82" y="92" font-size="12" text-anchor="middle" fill="#111">名詞 1〜3 語で</text>
+  <text x="82" y="110" font-size="12" text-anchor="middle" fill="#111">全文検索</text>
+  <text x="82" y="128" font-size="12" text-anchor="middle" fill="#333">先頭 20 件まで</text>
+
+  <rect x="174" y="44" width="140" height="96" rx="6" fill="#fdf3e3" stroke="#a8641f" stroke-width="2"/>
+  <text x="244" y="68" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">2 全文を読む</text>
+  <text x="244" y="92" font-size="12" text-anchor="middle" fill="#111">最大 5 件</text>
+  <text x="244" y="110" font-size="12" text-anchor="middle" fill="#111">食い違う資料は</text>
+  <text x="244" y="128" font-size="12" text-anchor="middle" fill="#111">両方を併記</text>
+
+  <rect x="336" y="44" width="140" height="96" rx="6" fill="#fdf3e3" stroke="#a8641f" stroke-width="2"/>
+  <text x="406" y="68" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">3 回答</text>
+  <text x="406" y="92" font-size="12" text-anchor="middle" fill="#111">根拠の原本への</text>
+  <text x="406" y="110" font-size="12" text-anchor="middle" fill="#111">[[リンク]] を付ける</text>
+  <text x="406" y="128" font-size="12" text-anchor="middle" fill="#333">保存しない</text>
+
+  <rect x="498" y="44" width="140" height="96" rx="6" fill="#fdf3e3" stroke="#a8641f" stroke-width="2"/>
+  <text x="568" y="68" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">4 関係の候補</text>
+  <text x="568" y="92" font-size="12" text-anchor="middle" fill="#111">関係を選択肢で示す</text>
+  <text x="568" y="110" font-size="12" text-anchor="middle" fill="#111">新しい種類は</text>
+  <text x="568" y="128" font-size="12" text-anchor="middle" fill="#111">追加を承認</text>
+
+  <rect x="660" y="44" width="128" height="96" rx="6" fill="#fdf3e3" stroke="#a8641f" stroke-width="2"/>
+  <text x="724" y="68" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">5 記録</text>
+  <text x="724" y="92" font-size="12" text-anchor="middle" fill="#111">承認した分だけ</text>
+  <text x="724" y="110" font-size="12" text-anchor="middle" fill="#111">関連に書く</text>
+
+  <line x1="152" y1="92" x2="172" y2="92" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="314" y1="92" x2="334" y2="92" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="476" y1="92" x2="496" y2="92" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="638" y1="92" x2="658" y2="92" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- 該当なし -->
+  <rect x="12" y="176" width="140" height="44" rx="5" fill="#f4f4f4" stroke="#555" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="82" y="195" font-size="12" text-anchor="middle" fill="#111">ヒットなし →</text>
+  <text x="82" y="211" font-size="12" text-anchor="middle" fill="#111">「該当なし」と答える</text>
+  <line x1="82" y1="140" x2="82" y2="174" stroke="#333" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#a)"/>
+
+  <!-- 承認なし -->
+  <rect x="498" y="176" width="140" height="44" rx="5" fill="#f4f4f4" stroke="#555" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="568" y="195" font-size="12" text-anchor="middle" fill="#111">候補なし・未承認 →</text>
+  <text x="568" y="211" font-size="12" text-anchor="middle" fill="#111">何も記録しない</text>
+  <line x1="568" y1="140" x2="568" y2="174" stroke="#333" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#a)"/>
+
+  <!-- 凡例 -->
+  <line x1="200" y1="248" x2="228" y2="248" stroke="#333" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#a)"/>
+  <text x="236" y="252" font-size="12" fill="#111">条件つきの分岐</text>
+</svg>
