@@ -92,22 +92,7 @@ Vault のルートで、初回に 1 度だけ `init` を実行する。
 
 ## 困ったとき
 
-最終報告に出る主な理由（`inbox/` に残る資料）と、画面の表示ごとの対処。
-
-| 理由・表示 | 対処 |
-|---|---|
-| `duplicate` | 同じ中身の資料が既にある。放置してよい。 |
-| `unsupported` | 対象外の形式（`.doc`・`.xls`・`.ppt`・画像・csv・json・zip）。変換して置く。 |
-| `extract_failed` | スキャン PDF・壊れた・パスワード付きの資料。 |
-| `missing_dependency: <pip 名>` | `/vault-inbox:init` か `doctor` が示すコマンドで入れる。 |
-| `name_collision` | 分類先に同名で内容が違う資料がある。名前を変えて置き直す。 |
-| 未承認 | 分類先を承認しなかった。内容が変わるまで聞き直さない。 |
-| 初期化されていません | `/vault-inbox:init` を実行する。 |
-| `already_running`（`holder`） | 終わるのを待つ。止めた後も出るなら、`watch` は約 30 秒、`organize` は約 1 時間待つか、[ロックの解放](docs/stale-lock.md)をする。 |
-| `[NG]`・`python` が見つからない | `[NG]` の次の行の対処に従う。Windows は `py -3 -X utf8` で代用できる。 |
-| Monitor が使えない | `watch` の代わりに `/vault-inbox:organize` を実行する。 |
-
-実機での確認の手順と、既知の制限は [docs/manual-check.md](docs/manual-check.md) にある。
+`inbox/` に資料が残る理由と、画面の表示ごとの対処は [docs/troubleshooting.md](docs/troubleshooting.md)。実機での確認の手順と既知の制限は [docs/manual-check.md](docs/manual-check.md)。
 
 ## ライセンス
 

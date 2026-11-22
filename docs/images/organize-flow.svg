@@ -36,8 +36,8 @@
 
   <!-- scan の確認 -->
   <rect x="560" y="150" width="228" height="40" rx="5" fill="#f4f4f4" stroke="#555" stroke-width="1.5" stroke-dasharray="6 4"/>
-  <text x="674" y="168" font-size="12" text-anchor="middle" fill="#111">消えた資料と新しい資料の組は、</text>
-  <text x="674" y="184" font-size="12" text-anchor="middle" fill="#111">組み直すか選択肢で聞く</text>
+  <text x="674" y="168" font-size="12" text-anchor="middle" fill="#111">消えた・新しい資料、残った関係は、</text>
+  <text x="674" y="184" font-size="12" text-anchor="middle" fill="#111">選択肢で確認する</text>
   <line x1="703" y1="128" x2="703" y2="148" stroke="#333" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#a)"/>
 
   <!-- turn -->

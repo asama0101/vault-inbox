@@ -34,6 +34,7 @@
   <text x="448" y="224" font-size="12" fill="#111">要約・日付・関連（md と同じプロパティ）</text>
   <text x="448" y="244" font-size="12" fill="#333">手で追記しても、</text>
   <text x="448" y="262" font-size="12" fill="#333">次の実行で作り直される</text>
+  <text x="420" y="298" font-size="12" fill="#333">書き換えられない md（読み取り専用など）もここに書く</text>
 
   <line x1="598" y1="152" x2="598" y2="174" stroke="#333" stroke-width="1.5" stroke-dasharray="6 4"/>
   <text x="608" y="168" font-size="12" fill="#333">隣に置く</text>
