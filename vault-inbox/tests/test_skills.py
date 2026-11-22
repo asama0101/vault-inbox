@@ -12,7 +12,10 @@ SKILLS = ("init", "organize", "watch", "ask")
 
 
 def _text(name: str) -> str:
-    return (PLUGIN / "skills" / name / "SKILL.md").read_text(encoding="utf-8")
+    """SKILL.md followed by its references/*.md (detail split out to stay short)."""
+    base = PLUGIN / "skills" / name
+    files = [base / "SKILL.md", *sorted((base / "references").glob("*.md"))]
+    return "".join(f.read_text(encoding="utf-8") for f in files)
 
 
 @pytest.mark.parametrize("name", SKILLS)
@@ -583,7 +586,7 @@ def test_organize_saves_baseline_at_start_and_absorbs_own_writes_at_end():
 def test_organize_records_failed_and_lists_all_reasons():
     t = _text("organize")
     assert "--status=failed" in t
-    report = t.split("### 最終報告", 1)[1]
+    report = t.split("### 手順6: 最終報告", 1)[1]
     for reason in ("`failed`", "`bad_name`", "`skipped`", "`name_collision`"):
         assert reason in report, reason
 
@@ -599,6 +602,9 @@ def test_watch_tells_how_to_read_organize_and_where_the_args_file_is():
     t = _text("watch")
     assert "${CLAUDE_PLUGIN_ROOT}/skills/organize/SKILL.md" in t
     assert (PLUGIN / "skills" / "organize" / "SKILL.md").is_file()
+    for ref in ("scan", "intake"):
+        assert f"${{CLAUDE_PLUGIN_ROOT}}/skills/organize/references/{ref}.md" in t
+        assert (PLUGIN / "skills" / "organize" / "references" / f"{ref}.md").is_file()
     assert '@"${CLAUDE_PLUGIN_DATA}/args.txt"' in t
     # the variable names are written without ${} so they survive the expansion
     assert "名前は CLAUDE_PLUGIN_ROOT" in t
@@ -628,7 +634,7 @@ def test_watch_releases_its_own_leftover_pass_lock():
     reading = t.split("## organize の手順の読み方", 1)[1].split("## 手順", 1)[0]
     assert "前の回が外し損ねた残り" in reading  # every pass, not only the first
     assert "より優先する" in reading
-    stop = next(ln for ln in t.splitlines() if ln.startswith("6. 停止は"))
+    stop = next(ln for ln in t.splitlines() if ln.startswith("- 停止は"))
     assert stop.index("--name='pass'") < stop.index("unlock --owner='watch'`")
 
 
