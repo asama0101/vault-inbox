@@ -592,3 +592,66 @@ def test_watch_runs_at_most_one_extra_pass():
     t = _text("watch")
     assert "もう 1 回だけ" in t
     assert "次の `CHANGED` を待つ" in t
+
+
+def test_watch_tells_how_to_read_organize_and_where_the_args_file_is():
+    """organize cannot be auto-loaded, and Read leaves ${...} unexpanded."""
+    t = _text("watch")
+    assert "${CLAUDE_PLUGIN_ROOT}/skills/organize/SKILL.md" in t
+    assert (PLUGIN / "skills" / "organize" / "SKILL.md").is_file()
+    assert '@"${CLAUDE_PLUGIN_DATA}/args.txt"' in t
+    # the variable names are written without ${} so they survive the expansion
+    assert "名前は CLAUDE_PLUGIN_ROOT" in t
+    assert "名前は CLAUDE_PLUGIN_DATA" in t
+    assert "読めなければ" in t
+
+
+def test_watch_rereads_organize_and_always_releases_the_pass_lock():
+    t = _text("watch")
+    assert "読み直す" in t
+    assert "最後に必ず `SCRIPT unlock --name='pass' --owner='watch'`" in t
+
+
+def test_watch_tells_that_later_passes_ask_for_approval():
+    body = _text("watch").split("## 手順", 1)[1]
+    assert "コマンドを実行するたびに承認の確認が出ます" in body
+    refused = next(ln for ln in body.splitlines() if "承認を断られたら" in ln)
+    assert "SCRIPT unlock --name='pass' --owner='watch'" in refused
+    assert "溜めた `CHANGED` も捨てて" in refused
+    readme = (PLUGIN.parent / "README.md").read_text(encoding="utf-8")
+    assert "`watch` は承認を待つ" in readme
+
+
+def test_watch_releases_its_own_leftover_pass_lock():
+    """a refused approval can leave owner watch's pass lock; only one watch runs."""
+    t = _text("watch")
+    reading = t.split("## organize の手順の読み方", 1)[1].split("## 手順", 1)[0]
+    assert "前の回が外し損ねた残り" in reading  # every pass, not only the first
+    assert "より優先する" in reading
+    stop = next(ln for ln in t.splitlines() if ln.startswith("6. 停止は"))
+    assert stop.index("--name='pass'") < stop.index("unlock --owner='watch'`")
+
+
+@pytest.mark.parametrize("name", SKILLS)
+def test_each_skill_stops_when_python_is_missing(name):
+    assert "別の起動コマンドは試さない" in _text(name)
+
+
+def test_ask_tells_that_approving_a_relation_rewrites_md():
+    line = next(ln for ln in _text("ask").splitlines() if "`src` → `dst`" in ln)
+    assert "書き換わる" in line
+
+
+def test_organize_rereads_itself_when_the_later_steps_are_gone():
+    line = next(
+        ln for ln in _text("organize").splitlines() if "skills/organize/SKILL.md" in ln
+    )
+    assert "読み直" in line
+    assert "名前は CLAUDE_PLUGIN_ROOT" in line
+    assert "名前は CLAUDE_PLUGIN_DATA" in line
+
+
+def test_ask_says_every_registered_md_is_rewritten():
+    """indexmd.write_notes rewrites every active material, not only the related ones."""
+    line = next(ln for ln in _text("ask").splitlines() if "`src` → `dst`" in ln)
+    assert "登録済みのすべての md" in line

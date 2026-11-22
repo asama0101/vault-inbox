@@ -32,6 +32,8 @@ allowed-tools:
 
 `python -X utf8 "${CLAUDE_PLUGIN_ROOT}/scripts/vault_inbox.py" <cmd> --root='.'`
 
+`python` が見つからず `SCRIPT status` が失敗したら（Microsoft Store を開くよう求める表示を含む）、Python 3.10 以上を入れて `python` で起動できるようにするよう案内して止まる。`py`・`python3` など、別の起動コマンドは試さない（承認の確認が増え、ほかの手順と合わなくなる）。
+
 確認・承認は、すべて AskUserQuestion の選択肢で行う（自由入力を求めない）。選択肢は 1 つの質問につき 2〜4 個にする（「その他」は自動で付くので数えない）。
 
 ## 守ること
@@ -56,6 +58,8 @@ allowed-tools:
 ## 手順
 
 ### 0. 準備
+
+この手順は長い。途中で、このあとの手順（④ や仕上げ）が会話に見えなくなったら（会話が圧縮されたあとなど）、Read ツールで `${CLAUDE_PLUGIN_ROOT}/skills/organize/SKILL.md` を読み直して続ける。読み直した本文では、変数が置き換わらず、文字のまま残っている。プラグインのフォルダの変数（名前は CLAUDE_PLUGIN_ROOT）は `${CLAUDE_PLUGIN_ROOT}`、データのフォルダの変数（名前は CLAUDE_PLUGIN_DATA）は `${CLAUDE_PLUGIN_DATA}` に読み替える。`watch` から読んだときは、`watch` の「organize の手順の読み方」に従う。
 
 1. `SCRIPT status` を実行する。`initialized` が false なら、`init` を案内して止まる。
 2. 手動で実行したときだけ、`SCRIPT lock --owner='organize'` を実行する。`acquired` が false なら、「実行中（`holder`）のため、あとで再実行してください」と知らせて止まる。

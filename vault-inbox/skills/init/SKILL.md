@@ -14,6 +14,8 @@ allowed-tools:
 
 `python -X utf8 "${CLAUDE_PLUGIN_ROOT}/scripts/vault_inbox.py" <cmd> --root='.'`
 
+`python` が見つからず `SCRIPT status` が失敗したら（Microsoft Store を開くよう求める表示を含む）、Python 3.10 以上を入れて `python` で起動できるようにするよう案内して止まる。`py`・`python3` など、別の起動コマンドは試さない（承認の確認が増え、ほかの手順と合わなくなる）。
+
 ## 手順
 
 1. `SCRIPT status` を実行する。`{"initialized": ..., "has_obsidian": ..., "missing_deps": [...]}` が返る。

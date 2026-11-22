@@ -1,6 +1,6 @@
 ---
 name: watch
-description: Vault の変更を監視し、変更があるたびに organize の手順を自動で実行する（Monitor が必要）。
+description: Vault の変更を監視し、変更があるたびに organize の手順を実行する（Monitor が必要。2 回目以降は、コマンドごとに承認の確認が出る）。
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion
@@ -35,7 +35,23 @@ allowed-tools:
 
 `python -X utf8 "${CLAUDE_PLUGIN_ROOT}/scripts/vault_inbox.py" <cmd> --root='.'`
 
+`python` が見つからず `SCRIPT status` が失敗したら（Microsoft Store を開くよう求める表示を含む）、Python 3.10 以上を入れて `python` で起動できるようにするよう案内して止まる。`py`・`python3` など、別の起動コマンドは試さない（承認の確認が増え、ほかの手順と合わなくなる）。
+
 確認・承認は、すべて AskUserQuestion の選択肢で行う。
+
+## organize の手順の読み方
+
+整理の中身は、`organize` の手順で行う。`organize` は自動で読み込めないので、Read ツールで読む。
+
+1. 初回の実行の前に、Read ツールで `${CLAUDE_PLUGIN_ROOT}/skills/organize/SKILL.md` を読む。その「守ること」「引数ファイル」「手順」に従う。
+2. 読んだ本文では、変数が置き換わらず、文字のまま残っている。次の値に読み替える。
+   - プラグインのフォルダの変数（名前は CLAUDE_PLUGIN_ROOT）: `${CLAUDE_PLUGIN_ROOT}`
+   - データのフォルダの変数（名前は CLAUDE_PLUGIN_DATA）: `${CLAUDE_PLUGIN_DATA}`
+3. `SCRIPT <cmd>` は、上の呼び方を使う。
+4. 引数ファイルは `${CLAUDE_PLUGIN_DATA}/args.txt` に書く。`@ARGS` は `@"${CLAUDE_PLUGIN_DATA}/args.txt"` のこと。
+5. 実行の前でも途中でも、読んだ手順の全文が会話に見えなければ（会話が圧縮されたあとなど）、1 と同じファイルを読み直す。途中なら、どの手順まで済んだかを会話で確かめてから、続きを行う。
+6. 読めなければ（承認されなかったときを含む）、その回の整理をやめ、`pass` のロックを取っていれば `SCRIPT unlock --name='pass' --owner='watch'` で外して、利用者に知らせる。
+7. 初回でも `CHANGED` の回でも、`pass` が取れず（`acquired` が false）、`holder` の owner が `watch` なら、前の回が外し損ねた残りなので、`SCRIPT unlock --name='pass' --owner='watch'` で外してから取り直す（`watch` は `session` のロックで 1 つしか動かないため）。この決まりは、`organize` の「準備」の 3（`ask-record` 以外なら止まる）より優先する。
 
 ## 手順
 
@@ -46,9 +62,13 @@ allowed-tools:
    `python -X utf8 "${CLAUDE_PLUGIN_ROOT}/scripts/vault_inbox.py" watch --interval='5' --settle='3' --root='.'`
 
    最初の出力が `{"error": "already_running"}` なら、「すでに実行中です」と知らせて終わる。
-4. そのあとで、初回として「organize」の手順を 1 回実行する。引数ファイルの規則（置き場所・書き方）は、`organize` の「引数ファイル」の節に従う。`session` のロックは `watch`（Monitor のコマンド）が持っているので、owner `organize` のロックは取らない（`organize` の「準備」の 2 と、仕上げの `session` の `unlock` は行わない）。`pass` のロック（`--name pass`）は、`organize` の手順のとおり、実行ごとに owner `watch` で取り、終わったら解除する。
+
+   起動したら、利用者に次を知らせる。「2 回目以降の整理（変更の通知のあと）では、コマンドを実行するたびに承認の確認が出ます。承認するまで整理は進みません。」
+4. そのあとで、初回として「organize」の手順を 1 回実行する。引数ファイルと変数の読み替えは、上の「organize の手順の読み方」に従う。`session` のロックは `watch`（Monitor のコマンド）が持っているので、owner `organize` のロックは取らない（`organize` の「準備」の 2 と、仕上げの `session` の `unlock` は行わない）。`pass` のロック（`--name pass`）は、`organize` の手順のとおり、実行ごとに owner `watch` で取り、終わったら解除する。
 5. `CHANGED` の行が来るたびに、先に `SCRIPT changed` を実行する。`changed` が false なら（前の実行が、自分の書き込みのあとで基準を保存し終えている）、その回は何もしない。true なら、`organize` の手順（`pass` のロックと `snapshot-save` から、`snapshot-absorb` と解除まで）を実行する。この 2 回目以降の実行では、`inbox/` に残る資料は、`seen` が false のものだけを知らせる（`organize` の ④ のとおり）。
    - 実行が済んだら、もう一度 `SCRIPT changed` を実行する（初回の実行のあとも）。true なら（確認の応答待ちの間に置かれた・変えられた資料などが、まだ処理されていない）、続けてもう 1 回だけ実行する。その追加の実行のあとは `changed` を確かめず、次の `CHANGED` を待つ（追加の実行は、`CHANGED` 1 回・初回の実行 1 回につき、最大 1 回）。
    - 確認（AskUserQuestion）の応答待ちの間に来た `CHANGED` は、溜めておく。確認が終わって実行が済んだあとで、1 回にまとめて実行する。
    - 実行が失敗しても、監視は続ける。失敗は利用者に知らせる。
-6. 停止は、セッションを閉じるか、Monitor の停止の操作で行う。後始末として `SCRIPT unlock --owner='watch'` も実行する。
+   - 実行が途中で失敗しても、最後に必ず `SCRIPT unlock --name='pass' --owner='watch'` を実行する（`organize` の手順が会話に残っていなくても、これは守る）。
+   - 実行中のコマンドの承認を断られたら、その回の実行をやめる。`SCRIPT unlock --name='pass' --owner='watch'` を実行し（これにも承認の確認が出る）、やめたことを利用者に知らせる。外せなかったときは、次の turn の最初に外す。やめた回のあとは、`changed` を確かめず、溜めた `CHANGED` も捨てて、次の `CHANGED` を待つ。
+6. 停止は、セッションを閉じるか、Monitor の停止の操作で行う。後始末として `SCRIPT unlock --name='pass' --owner='watch'` と `SCRIPT unlock --owner='watch'` を、この順に実行する（`pass` を先に外す。`session` を先に外すと、その間に起動した別の `watch` の `pass` を外しうるため）。
