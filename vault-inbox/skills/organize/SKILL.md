@@ -59,7 +59,7 @@ allowed-tools:
 
 ### 0. 準備
 
-この手順は長い。途中で、このあとの手順（④ や仕上げ）が会話に見えなくなったら（会話が圧縮されたあとなど）、Read ツールで `${CLAUDE_PLUGIN_ROOT}/skills/organize/SKILL.md` を読み直して続ける。読み直した本文の `SCRIPT` と引数ファイルは、この本文の上の呼び方と同じ。
+この手順は長い。途中で、このあとの手順（④ や仕上げ）が会話に見えなくなったら（会話が圧縮されたあとなど）、Read ツールで `${CLAUDE_PLUGIN_ROOT}/skills/organize/SKILL.md` を読み直して続ける。読み直した本文では、変数が置き換わらず、文字のまま残っている。プラグインのフォルダの変数（名前は CLAUDE_PLUGIN_ROOT）は `${CLAUDE_PLUGIN_ROOT}`、データのフォルダの変数（名前は CLAUDE_PLUGIN_DATA）は `${CLAUDE_PLUGIN_DATA}` に読み替える。`watch` から読んだときは、`watch` の「organize の手順の読み方」に従う。
 
 1. `SCRIPT status` を実行する。`initialized` が false なら、`init` を案内して止まる。
 2. 手動で実行したときだけ、`SCRIPT lock --owner='organize'` を実行する。`acquired` が false なら、「実行中（`holder`）のため、あとで再実行してください」と知らせて止まる。

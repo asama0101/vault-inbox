@@ -613,9 +613,20 @@ def test_watch_rereads_organize_and_always_releases_the_pass_lock():
 
 
 def test_watch_tells_that_later_passes_ask_for_approval():
+    body = _text("watch").split("## 手順", 1)[1]
+    assert "コマンドを実行するたびに承認の確認が出ます" in body
+    refused = next(ln for ln in body.splitlines() if "承認を断られたら" in ln)
+    assert "SCRIPT unlock --name='pass' --owner='watch'" in refused
+    assert "溜めた `CHANGED` も捨てて" in refused
+    readme = (PLUGIN.parent / "README.md").read_text(encoding="utf-8")
+    assert "`watch` は承認を待つ" in readme
+
+
+def test_watch_releases_its_own_leftover_pass_lock():
+    """a refused approval can leave owner watch's pass lock; only one watch runs."""
     t = _text("watch")
-    assert "承認の確認が出る" in t
-    assert "承認を断られたら" in t
+    assert "前の回が外し損ねた残り" in t
+    assert t.count("SCRIPT unlock --name='pass' --owner='watch'") >= 4
 
 
 @pytest.mark.parametrize("name", SKILLS)
@@ -629,4 +640,15 @@ def test_ask_tells_that_approving_a_relation_rewrites_md():
 
 
 def test_organize_rereads_itself_when_the_later_steps_are_gone():
-    assert "${CLAUDE_PLUGIN_ROOT}/skills/organize/SKILL.md" in _text("organize")
+    line = next(
+        ln for ln in _text("organize").splitlines() if "skills/organize/SKILL.md" in ln
+    )
+    assert "読み直" in line
+    assert "名前は CLAUDE_PLUGIN_ROOT" in line
+    assert "名前は CLAUDE_PLUGIN_DATA" in line
+
+
+def test_ask_says_every_registered_md_is_rewritten():
+    """indexmd.write_notes rewrites every active material, not only the related ones."""
+    line = next(ln for ln in _text("ask").splitlines() if "`src` → `dst`" in ln)
+    assert "登録済みのすべての md" in line
