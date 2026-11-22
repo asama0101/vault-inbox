@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 380" width="800" height="380" font-family="'Yu Gothic', 'Meiryo', 'Noto Sans CJK JP', sans-serif">
+  <title>Vault のフォルダ構成</title>
+  <desc>inbox/ に資料を置くと、project/&lt;プロジェクト&gt;/&lt;分類&gt;/ か shared/&lt;種類&gt;/&lt;サブ&gt;/ へ移る。分類先は 5 階層まで。内部の記録は .vault-inbox/ の meta.json（ID・要約・日付・関係）、index.db（全文検索の索引）、text/（全文）に入る。</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+  </defs>
+  <rect width="800" height="380" fill="#ffffff"/>
+  <text x="12" y="24" font-size="15" font-weight="bold" fill="#111">Vault のフォルダ構成</text>
+
+  <!-- inbox -->
+  <rect x="12" y="44" width="200" height="86" rx="6" fill="#eaf2fb" stroke="#1f5fa8" stroke-width="2"/>
+  <text x="112" y="70" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">inbox/</text>
+  <text x="112" y="90" font-size="12" text-anchor="middle" fill="#111">資料を置く</text>
+  <text x="112" y="108" font-size="12" text-anchor="middle" fill="#111">md・txt・html・pdf</text>
+  <text x="112" y="124" font-size="12" text-anchor="middle" fill="#111">docx・xlsx・pptx</text>
+
+  <!-- project / shared -->
+  <rect x="300" y="44" width="488" height="86" rx="6" fill="#eaf2fb" stroke="#1f5fa8" stroke-width="2"/>
+  <text x="312" y="68" font-size="14" font-weight="bold" fill="#111">project/</text>
+  <text x="400" y="68" font-size="12" fill="#111">&lt;プロジェクト&gt;/&lt;分類&gt;/…</text>
+  <text x="640" y="68" font-size="12" fill="#111">案件ごとの資料</text>
+  <text x="312" y="108" font-size="14" font-weight="bold" fill="#111">shared/</text>
+  <text x="400" y="108" font-size="12" fill="#111">&lt;種類&gt;/&lt;サブ&gt;/…</text>
+  <text x="640" y="108" font-size="12" fill="#111">案件をまたぐ資料</text>
+  <line x1="300" y1="82" x2="788" y2="82" stroke="#1f5fa8" stroke-width="1" stroke-dasharray="3 3"/>
+
+  <line x1="212" y1="87" x2="298" y2="87" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="255" y="78" font-size="12" text-anchor="middle" fill="#333">移す</text>
+
+  <rect x="300" y="142" width="488" height="30" rx="4" fill="#ffffff" stroke="#555" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="544" y="162" font-size="12" text-anchor="middle" fill="#111">分類先は、project/・shared/ を含めて 5 階層まで</text>
+
+  <!-- .vault-inbox -->
+  <rect x="12" y="200" width="776" height="164" rx="6" fill="#f4f4f4" stroke="#555" stroke-width="2"/>
+  <text x="24" y="226" font-size="14" font-weight="bold" fill="#111">.vault-inbox/</text>
+  <text x="140" y="226" font-size="12" fill="#333">内部の記録（隠しフォルダ。meta.json は作り直せない）</text>
+
+  <rect x="24" y="244" width="244" height="104" rx="5" fill="#ffffff" stroke="#555" stroke-width="1.5"/>
+  <text x="146" y="270" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">meta.json</text>
+  <text x="146" y="296" font-size="12" text-anchor="middle" fill="#111">資料の ID・要約・日付</text>
+  <text x="146" y="316" font-size="12" text-anchor="middle" fill="#111">関係・分類の記録</text>
+
+  <rect x="278" y="244" width="244" height="104" rx="5" fill="#ffffff" stroke="#555" stroke-width="1.5"/>
+  <text x="400" y="270" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">index.db</text>
+  <text x="400" y="296" font-size="12" text-anchor="middle" fill="#111">全文検索の索引</text>
+  <text x="400" y="316" font-size="12" text-anchor="middle" fill="#111">（SQLite FTS5 trigram）</text>
+
+  <rect x="532" y="244" width="244" height="104" rx="5" fill="#ffffff" stroke="#555" stroke-width="1.5"/>
+  <text x="654" y="270" font-size="14" font-weight="bold" text-anchor="middle" fill="#111">text/</text>
+  <text x="654" y="296" font-size="12" text-anchor="middle" fill="#111">資料の全文</text>
+  <text x="654" y="316" font-size="12" text-anchor="middle" fill="#111">&lt;ID&gt;.txt</text>
+</svg>

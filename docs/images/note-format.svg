@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" width="800" height="320" font-family="'Yu Gothic', 'Meiryo', 'Noto Sans CJK JP', sans-serif">
+  <title>要約・日付・関係の書かれ方</title>
+  <desc>md の資料は、原本の先頭のプロパティに要約・日付・関連と印のキー vault-inbox: true を書く。md 以外の資料は、原本を書き換えず、隣の「資料名.要約.md」に同じプロパティを書く。</desc>
+  <rect width="800" height="320" fill="#ffffff"/>
+  <text x="12" y="24" font-size="15" font-weight="bold" fill="#111">要約・日付・関係の書かれ方</text>
+
+  <!-- md -->
+  <rect x="12" y="44" width="380" height="264" rx="6" fill="#eaf2fb" stroke="#1f5fa8" stroke-width="2"/>
+  <text x="24" y="70" font-size="14" font-weight="bold" fill="#111">md の資料: 原本の先頭に書く</text>
+  <text x="24" y="92" font-size="12" fill="#111">議事録.md</text>
+  <rect x="24" y="102" width="356" height="190" rx="4" fill="#ffffff" stroke="#555" stroke-width="1.5"/>
+  <g xml:space="preserve" font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#111">
+    <text x="36" y="124">---</text>
+    <text x="36" y="144">要約: "契約の更新条件と通知期限…"</text>
+    <text x="36" y="164">日付: 2026-11-21</text>
+    <text x="36" y="184">関連:</text>
+    <text x="36" y="204">&#160;&#160;- "[[project/案件A/契約書.pdf.要約.md|…]]"</text>
+    <text x="36" y="224">vault-inbox: true</text>
+    <text x="36" y="244">---</text>
+    <text x="36" y="268">（本文）</text>
+  </g>
+  <text x="372" y="224" font-size="12" text-anchor="end" fill="#333">← 印のキー</text>
+
+  <!-- non-md -->
+  <rect x="408" y="44" width="380" height="264" rx="6" fill="#fdf3e3" stroke="#a8641f" stroke-width="2"/>
+  <text x="420" y="70" font-size="14" font-weight="bold" fill="#111">md 以外: 隣の要約ノートに書く</text>
+
+  <rect x="432" y="96" width="332" height="56" rx="5" fill="#ffffff" stroke="#555" stroke-width="1.5"/>
+  <text x="448" y="120" font-size="14" font-weight="bold" fill="#111">契約書.pdf</text>
+  <text x="448" y="140" font-size="12" fill="#333">原本。書き換えない</text>
+
+  <rect x="432" y="176" width="332" height="108" rx="5" fill="#ffffff" stroke="#555" stroke-width="1.5"/>
+  <text x="448" y="200" font-size="14" font-weight="bold" fill="#111">契約書.pdf.要約.md</text>
+  <text x="448" y="224" font-size="12" fill="#111">要約・日付・関連（md と同じプロパティ）</text>
+  <text x="448" y="244" font-size="12" fill="#333">手で追記しても、</text>
+  <text x="448" y="262" font-size="12" fill="#333">次の実行で作り直される</text>
+  <text x="420" y="298" font-size="12" fill="#333">書き換えられない md（読み取り専用など）もここに書く</text>
+
+  <line x1="598" y1="152" x2="598" y2="174" stroke="#333" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="608" y="168" font-size="12" fill="#333">隣に置く</text>
+</svg>
