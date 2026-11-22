@@ -592,3 +592,41 @@ def test_watch_runs_at_most_one_extra_pass():
     t = _text("watch")
     assert "もう 1 回だけ" in t
     assert "次の `CHANGED` を待つ" in t
+
+
+def test_watch_tells_how_to_read_organize_and_where_the_args_file_is():
+    """organize cannot be auto-loaded, and Read leaves ${...} unexpanded."""
+    t = _text("watch")
+    assert "${CLAUDE_PLUGIN_ROOT}/skills/organize/SKILL.md" in t
+    assert (PLUGIN / "skills" / "organize" / "SKILL.md").is_file()
+    assert '@"${CLAUDE_PLUGIN_DATA}/args.txt"' in t
+    # the variable names are written without ${} so they survive the expansion
+    assert "名前は CLAUDE_PLUGIN_ROOT" in t
+    assert "名前は CLAUDE_PLUGIN_DATA" in t
+    assert "読めなければ" in t
+
+
+def test_watch_rereads_organize_and_always_releases_the_pass_lock():
+    t = _text("watch")
+    assert "読み直す" in t
+    assert "最後に必ず `SCRIPT unlock --name='pass' --owner='watch'`" in t
+
+
+def test_watch_tells_that_later_passes_ask_for_approval():
+    t = _text("watch")
+    assert "承認の確認が出る" in t
+    assert "承認を断られたら" in t
+
+
+@pytest.mark.parametrize("name", SKILLS)
+def test_each_skill_stops_when_python_is_missing(name):
+    assert "別の起動コマンドは試さない" in _text(name)
+
+
+def test_ask_tells_that_approving_a_relation_rewrites_md():
+    line = next(ln for ln in _text("ask").splitlines() if "`src` → `dst`" in ln)
+    assert "書き換わる" in line
+
+
+def test_organize_rereads_itself_when_the_later_steps_are_gone():
+    assert "${CLAUDE_PLUGIN_ROOT}/skills/organize/SKILL.md" in _text("organize")
