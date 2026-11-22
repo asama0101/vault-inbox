@@ -50,9 +50,10 @@
   <line x1="82" y1="140" x2="82" y2="174" stroke="#333" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#a)"/>
 
   <!-- 承認なし -->
-  <rect x="498" y="176" width="140" height="44" rx="5" fill="#f4f4f4" stroke="#555" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <rect x="498" y="176" width="140" height="58" rx="5" fill="#f4f4f4" stroke="#555" stroke-width="1.5" stroke-dasharray="6 4"/>
   <text x="568" y="195" font-size="12" text-anchor="middle" fill="#111">候補なし・未承認 →</text>
-  <text x="568" y="211" font-size="12" text-anchor="middle" fill="#111">何も記録しない</text>
+  <text x="568" y="211" font-size="12" text-anchor="middle" fill="#111">「記録した関係は</text>
+  <text x="568" y="227" font-size="12" text-anchor="middle" fill="#111">ありません」と知らせる</text>
   <line x1="568" y1="140" x2="568" y2="174" stroke="#333" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#a)"/>
 
   <!-- 凡例 -->
