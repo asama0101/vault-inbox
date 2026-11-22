@@ -13,6 +13,12 @@ Obsidian の Vault の `inbox/` に置いた資料を、Claude Code が読んで
 - **質問で資料を引ける**: 登録した資料を検索し、根拠の資料へのリンク付きで答える。
 - **手作業と両立できる**: 資料は通常のファイルのまま。手で `project/`・`shared/` 内を移動・改名しても、中身が同じなら追従する（移動と同時に編集した資料は、組み直すか選択肢で聞く）。
 
+### 全体図
+
+次の図は、整理（`organize`・`watch`）と質問（`ask`）の動きを示す。
+
+<img src="docs/images/how-it-works.svg" alt="整理は、inbox/ の資料を Claude Code が読んで要約・日付を付け、project/ か shared/ へ移し、要約ノートか md のプロパティを更新する。watch は inbox/・project/・shared/ の変化で整理を自動実行する。質問は、登録済みの資料を検索して根拠リンク付きで答え、承認した関係を記録して要約ノートか md のプロパティに反映する。">
+
 ### 仕組み
 
 `inbox/` には md・txt・html・pdf・docx・xlsx・pptx を置ける。分類先は `project/`・`shared/` を含めて 5 階層まで（超えた分は切り詰められる）。内部の記録（資料の ID・要約・関係・全文の索引）は Vault の `.vault-inbox/` に保存される。
