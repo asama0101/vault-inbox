@@ -7,6 +7,13 @@
 - テスト: `python -m pytest`
 - lint: `python -m ruff check .` と `python -m ruff format --check .`
 
+## 版を上げるとき
+
+次の 2 か所の `version` を、同じ値にそろえる。
+
+- `vault-inbox/.claude-plugin/plugin.json`
+- `pyproject.toml`
+
 ## docs の更新ルール
 
 次の表は、変更したものと、同じ PR で見直す文書を示す。
