@@ -66,6 +66,7 @@ Vault のルートで、初回に 1 度だけ `init` を実行する。
 
 | コマンド | 内容 | 起動 |
 |---|---|---|
+| `/vault-inbox:doctor` | 環境（Python・保存先・ライブラリ・SQLite・版）を点検する。何も変更しない。 | 手動のみ |
 | `/vault-inbox:init` | Vault を初期化する（初回のみ）。 | 手動のみ |
 | `/vault-inbox:organize` | `inbox/` の資料を分類して移す。 | 手動のみ |
 | `/vault-inbox:watch` | 変化のたびに整理を行う（Monitor が必要。2 回目以降は承認の確認が出る）。 | 手動のみ |
