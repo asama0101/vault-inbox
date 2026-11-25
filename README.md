@@ -50,7 +50,8 @@ claude --plugin-dir <このリポジトリ>/vault-inbox
 
 ### 環境を確かめる・アンインストール
 
-- `doctor`: 何も変更せず、環境を 1 行ずつ表示する。`[NG]` があると終了コード 3。
+- `/vault-inbox:doctor`: 何も変更せず、環境を 1 行ずつ点検する。`[NG]` の次の行に、対処が出る。
+- `doctor`（スキルを使わず手で打つとき）: 同じ点検を表示する。`[NG]` があると終了コード 3。
   `python -X utf8 "<プラグインのパス>/scripts/vault_inbox.py" doctor --data "<保存先のパス>"`
 - `/plugin uninstall vault-inbox@vault-inbox`: 消えるのはプラグイン本体だけ。Vault・`.vault-inbox/`・保存先は残る。保存先の `args.txt` には要約・ファイル名が入っているので、不要なら消す。
 
