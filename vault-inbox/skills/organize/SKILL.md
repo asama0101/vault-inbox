@@ -126,4 +126,6 @@ allowed-tools:
 - `failed`（配置の途中で、想定しない失敗が起きた）
 - 未承認（分類先の提案を承認されなかった）
 
+`missing_dependency: <pip 名>` が 1 件でもあれば、その pip 名（PDF なら `pypdf`）のライブラリが入っていないことを知らせ、`/vault-inbox:doctor` で導入のコマンドを確かめるよう案内する（自分では入れない）。導入後に `organize` をやり直すと、`inbox/` に残った資料を取り込める。
+
 あわせて、配置した件数と、`scan` で処理した件数（`moved`・`updated`・`failed`）を知らせる。残りがなければ「`inbox/` は空」と知らせる。
