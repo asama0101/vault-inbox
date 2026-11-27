@@ -1,6 +1,6 @@
 {
   "name": "vault-inbox",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Obsidian Vault の inbox を整理・監視・質問するプラグイン",
   "author": {
     "name": "asama0101 contributors"
