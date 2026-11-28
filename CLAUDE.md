@@ -7,9 +7,8 @@
 - テスト: `python -m pytest`
 - lint: `python -m ruff check .` と `python -m ruff format --check .`
 
-## 版を上げるとき
+## 作業の前に読むファイル
 
-次の 2 か所の `version` を、同じ値にそろえる。
-
-- `vault-inbox/.claude-plugin/plugin.json`
-- `pyproject.toml`
+| 作業 | 読むファイル |
+|---|---|
+| 準備、構成の確認、版を上げる | `docs/development.md` |
